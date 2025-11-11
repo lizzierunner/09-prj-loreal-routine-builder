@@ -24,8 +24,31 @@
           <i class="fa-solid fa-language"></i>
           <span id="languageText">العربية</span>
         </button>
+        
+        <!-- Dark Mode Toggle -->
+        <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        
         <img src="img/loreal-logo.png" alt="L'Oréal Logo" class="logo" />
         <h1 class="site-title">Smart Routine &amp; Product Advisor</h1>
+        
+        <!-- Quick Action Buttons -->
+        <div class="header-actions">
+          <button id="skinQuizBtn" class="header-action-btn" title="Take Skin Quiz">
+            <i class="fa-solid fa-clipboard-question"></i>
+            <span>Skin Quiz</span>
+          </button>
+          <button id="favoritesBtn" class="header-action-btn" title="View Favorites">
+            <i class="fa-solid fa-heart"></i>
+            <span>Favorites</span>
+            <span id="favoritesCount" class="badge">0</span>
+          </button>
+          <button id="compareBtn" class="header-action-btn" title="Compare Products">
+            <i class="fa-solid fa-code-compare"></i>
+            <span>Compare</span>
+          </button>
+        </div>
       </header>
 
       <!-- Search & Filter Section -->
@@ -80,9 +103,20 @@
       <section class="chatbox">
         <div class="chat-header">
           <h2>Let's Build Your Routine</h2>
-          <button id="clearChat" class="clear-chat-btn" title="Clear conversation history">
-            <i class="fa-solid fa-rotate-right"></i>
-          </button>
+          <div class="chat-header-actions">
+            <button id="voiceInputBtn" class="voice-input-btn" title="Voice input">
+              <i class="fa-solid fa-microphone"></i>
+            </button>
+            <button id="exportPDFBtn" class="export-pdf-btn" title="Export routine to PDF">
+              <i class="fa-solid fa-file-pdf"></i>
+            </button>
+            <button id="shareRoutineBtn" class="share-routine-btn" title="Share routine">
+              <i class="fa-solid fa-share-nodes"></i>
+            </button>
+            <button id="clearChat" class="clear-chat-btn" title="Clear conversation history">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
         </div>
         <div id="chatWindow" class="chat-window"></div>
 
@@ -102,6 +136,27 @@
           </button>
         </form>
       </section>
+      
+      <!-- Routine Timeline Visualization -->
+      <section id="routineTimeline" class="routine-timeline" style="display: none;">
+        <h2>Your Personalized Routine</h2>
+        <div class="timeline-container">
+          <div class="timeline-period am">
+            <div class="period-header">
+              <i class="fa-solid fa-sun"></i>
+              <h3>Morning Routine</h3>
+            </div>
+            <div id="amSteps" class="timeline-steps"></div>
+          </div>
+          <div class="timeline-period pm">
+            <div class="period-header">
+              <i class="fa-solid fa-moon"></i>
+              <h3>Evening Routine</h3>
+            </div>
+            <div id="pmSteps" class="timeline-steps"></div>
+          </div>
+        </div>
+      </section>
 
       <!------- Footer Links ------->
       <footer class="site-footer">
@@ -115,9 +170,56 @@
       </footer>
     </div>
 
+    <!-- Skin Quiz Modal -->
+    <div id="skinQuizModal" class="modal skin-quiz-modal" style="display: none;">
+      <div class="modal-content quiz-content">
+        <button class="modal-close" onclick="closeSkinQuiz()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <div id="quizContainer"></div>
+      </div>
+    </div>
+    
+    <!-- Favorites Modal -->
+    <div id="favoritesModal" class="modal favorites-modal" style="display: none;">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeFavorites()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <h2><i class="fa-solid fa-heart"></i> My Favorites</h2>
+        <div id="favoritesContainer"></div>
+      </div>
+    </div>
+    
+    <!-- Compare Products Modal -->
+    <div id="compareModal" class="modal compare-modal" style="display: none;">
+      <div class="modal-content compare-content">
+        <button class="modal-close" onclick="closeCompare()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <h2><i class="fa-solid fa-code-compare"></i> Compare Products</h2>
+        <div id="compareContainer"></div>
+      </div>
+    </div>
+    
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal share-modal" style="display: none;">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeShareModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <h2><i class="fa-solid fa-share-nodes"></i> Share Your Routine</h2>
+        <div id="shareContainer">
+          <p>Copy this link to share your routine:</p>
+          <div class="share-link-box">
+            <input type="text" id="shareLink" readonly />
+            <button onclick="copyShareLink()"><i class="fa-solid fa-copy"></i> Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- No secrets.js needed! API key is secure in Cloudflare Worker -->
     <script src="script.js"></script>
-  </body>
-</html>
   </body>
 </html>

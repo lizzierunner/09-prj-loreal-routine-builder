@@ -1,13 +1,33 @@
-/* —— L'Oréal Brand Colors —— */
+/* —— L'Oréal Official Brand Colors —— */
+/* Based on FutureBrand's L'Oréal corporate identity */
 :root {
-  --loreal-red: #ff003b;
-  --loreal-gold: #e3a535;
-  --loreal-dark: #1a1a1a;
-  --loreal-gray: #f5f5f5;
-  --loreal-border: #e0e0e0;
-  --loreal-white: #ffffff;
-  --loreal-text: #333333;
-  --loreal-light-text: #666666;
+  /* Primary Brand Colors */
+  --loreal-red: #E30613;        /* Vibrant red - passion & energy (official L'Oréal red) */
+  --loreal-black: #000000;      /* Pure black - sophistication & contrast */
+  --loreal-white: #FFFFFF;      /* Pure white - clean & modern */
+  
+  /* Secondary & Accent Colors */
+  --loreal-gold: #D4AF37;       /* Elegant gold - luxury & prestige */
+  --loreal-rose-gold: #B76E79;  /* Rose gold - feminine & refined */
+  --loreal-charcoal: #2C2C2C;   /* Soft black - subtle depth */
+  --loreal-pearl: #F8F8F8;      /* Pearl white - soft elegance */
+  
+  /* UI Support Colors */
+  --loreal-gray-light: #F5F5F5; /* Background neutrals */
+  --loreal-gray-medium: #E0E0E0;/* Borders & dividers */
+  --loreal-gray-dark: #666666;  /* Secondary text */
+  --loreal-text: #1a1a1a;       /* Primary text - near black */
+  
+  /* Gradient Combinations */
+  --gradient-red: linear-gradient(135deg, #E30613 0%, #B50510 100%);
+  --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+  --gradient-elegant: linear-gradient(135deg, #E30613 0%, #B76E79 100%);
+  --gradient-sophisticated: linear-gradient(135deg, #000000 0%, #2C2C2C 100%);
+  
+  /* Shadows & Depth */
+  --shadow-red: 0 4px 20px rgba(227, 6, 19, 0.15);
+  --shadow-elegant: 0 8px 32px rgba(227, 6, 19, 0.2);
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* —— RTL Support —— */
@@ -34,27 +54,93 @@ body {
   color: var(--loreal-text);
   display: flex;
   justify-content: center;
-  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #F8F8F8 0%, #FFFFFF 50%, #F8F8F8 100%);
   min-height: 100vh;
+  position: relative;
+}
+
+/* Subtle circular motif background (inspired by L'Oréal's "O") */
+body::before {
+  content: "";
+  position: fixed;
+  top: -10%;
+  right: -5%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(227, 6, 19, 0.03) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: -10%;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.03) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .page-wrapper {
   width: 90%;
   max-width: 1000px;
   background: var(--loreal-white);
-  box-shadow: 0 0 40px rgba(255, 0, 59, 0.08);
+  box-shadow: 0 0 60px rgba(227, 6, 19, 0.08), 0 0 120px rgba(0, 0, 0, 0.04);
   margin: 20px 0;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 /* header */
 .site-header {
   text-align: center;
-  padding: 40px 30px 30px;
-  background: linear-gradient(135deg, var(--loreal-red) 0%, #d40032 100%);
+  padding: 50px 30px 40px;
+  background: var(--gradient-red);
   position: relative;
   overflow: hidden;
+}
+
+/* Elegant circular pattern overlay (L'Oréal "O" motif) */
+.site-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -10%;
+  width: 120%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, 
+    rgba(255, 255, 255, 0.08) 0%, 
+    rgba(255, 255, 255, 0.04) 30%, 
+    transparent 60%);
+  animation: subtleRotate 60s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes subtleRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Sophisticated accent line */
+.site-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--loreal-gold) 50%, 
+    transparent 100%);
+  opacity: 0.6;
 }
 
 /* Language Toggle Button */
@@ -63,8 +149,8 @@ body {
   top: 20px;
   right: 20px;
   background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50px;
   padding: 10px 20px;
@@ -117,31 +203,68 @@ body {
 }
 
 .logo {
-  width: 220px;
-  margin-bottom: 15px;
+  width: 200px;
+  margin-bottom: 20px;
   position: relative;
   z-index: 1;
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+  opacity: 1;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.02);
 }
 
 .site-title {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 300;
   margin-bottom: 10px;
   color: var(--loreal-white);
   position: relative;
   z-index: 1;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Elegant accent after title */
+.site-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: var(--loreal-gold);
+  margin: 12px auto 0;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
 }
 
 /* Search & Filter Section */
 .search-section {
   margin: 0;
-  padding: 30px;
-  background: linear-gradient(to bottom, var(--loreal-gray) 0%, var(--loreal-white) 100%);
-  border-bottom: 1px solid var(--loreal-border);
+  padding: 35px 30px;
+  background: linear-gradient(to bottom, 
+    rgba(248, 248, 248, 1) 0%, 
+    rgba(255, 255, 255, 1) 100%);
+  border-bottom: 1px solid var(--loreal-gray-medium);
+  position: relative;
+}
+
+/* Subtle accent line at top */
+.search-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--loreal-red) 50%,
+    transparent 100%);
+  opacity: 0.3;
 }
 
 .search-filter-container {
@@ -162,36 +285,40 @@ body {
 .search-box i.fa-search {
   position: absolute;
   left: 24px;
-  color: var(--loreal-light-text);
+  color: var(--loreal-gold);
   font-size: 16px;
   pointer-events: none;
+  opacity: 0.7;
 }
 
 .search-box input {
   width: 100%;
   padding: 18px 60px 18px 54px;
   font-size: 16px;
-  border: 2px solid var(--loreal-border);
+  border: 2px solid rgba(0, 0, 0, 0.08);
   border-radius: 50px;
   background-color: var(--loreal-white);
   color: var(--loreal-text);
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  letter-spacing: 0.3px;
 }
 
 .search-box input::placeholder {
   color: var(--loreal-light-text);
+  font-weight: 300;
+  letter-spacing: 0.5px;
 }
 
 .search-box input:hover {
   border-color: var(--loreal-gold);
-  box-shadow: 0 4px 12px rgba(227, 165, 53, 0.15);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
 }
 
 .search-box input:focus {
   outline: none;
   border-color: var(--loreal-red);
-  box-shadow: 0 4px 16px rgba(255, 0, 59, 0.2);
+  box-shadow: 0 4px 16px rgba(227, 6, 19, 0.15);
 }
 
 .clear-search-btn {
@@ -213,8 +340,9 @@ body {
 }
 
 .clear-search-btn:hover {
-  background: var(--loreal-gray);
+  background: rgba(227, 6, 19, 0.08);
   color: var(--loreal-red);
+  transform: rotate(90deg);
 }
 
 /* Category Filter */
@@ -222,19 +350,20 @@ body {
   min-width: 280px;
   padding: 18px 24px;
   font-size: 16px;
-  border: 2px solid var(--loreal-border);
+  border: 2px solid rgba(0, 0, 0, 0.08);
   border-radius: 50px;
   cursor: pointer;
   background-color: var(--loreal-white);
   font-weight: 500;
   color: var(--loreal-text);
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .search-filter-container select:hover {
   border-color: var(--loreal-gold);
-  box-shadow: 0 4px 12px rgba(227, 165, 53, 0.15);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
 }
 
 .search-filter-container select:focus {
@@ -278,10 +407,12 @@ body {
 /* chat section */
 .chatbox {
   margin: 30px;
-  border: 2px solid var(--loreal-border);
-  border-radius: 16px;
-  padding: 30px;
-  background: linear-gradient(to bottom, var(--loreal-white) 0%, var(--loreal-gray) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  padding: 32px;
+  background: linear-gradient(to bottom, 
+    var(--loreal-white) 0%, 
+    rgba(248, 248, 248, 1) 100%);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
@@ -364,19 +495,23 @@ body {
 }
 
 .user-message {
-  background: linear-gradient(135deg, var(--loreal-red) 0%, #d40032 100%);
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
   color: var(--loreal-white);
   align-self: flex-end;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 8px rgba(255, 0, 59, 0.2);
+  box-shadow: 0 3px 10px rgba(227, 6, 19, 0.2);
+  font-weight: 400;
+  letter-spacing: 0.3px;
 }
 
 .ai-message {
   background-color: var(--loreal-white);
-  border: 2px solid var(--loreal-border);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: var(--loreal-text);
+  letter-spacing: 0.3px;
 }
 
 .ai-message h3 {
@@ -424,8 +559,8 @@ body {
 .citations {
   margin-top: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(227, 165, 53, 0.05) 0%, rgba(255, 0, 59, 0.05) 100%);
-  border: 1px solid var(--loreal-border);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(227, 6, 19, 0.04) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   animation: slideIn 0.3s ease-out;
 }
@@ -502,6 +637,7 @@ body {
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -550,29 +686,33 @@ body {
 
 .chat-form button {
   font-size: 18px;
-  background: linear-gradient(135deg, var(--loreal-red) 0%, #d40032 100%);
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
   color: var(--loreal-white);
   border: none;
   padding: 12px;
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(255, 0, 59, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.25);
 }
 
 .chat-form button:hover {
-  background: linear-gradient(135deg, #d40032 0%, #b00028 100%);
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(255, 0, 59, 0.4);
+  background: linear-gradient(135deg, #B8050F 0%, #9A0410 100%);
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(227, 6, 19, 0.35);
+}
+
+.chat-form button:active {
+  transform: scale(0.95);
 }
 
 .chat-form button:focus {
-  outline: 3px solid rgba(255, 0, 59, 0.3);
+  outline: 3px solid rgba(227, 6, 19, 0.3);
   outline-offset: 2px;
 }
 
@@ -636,43 +776,50 @@ body {
 .products-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 24px;
   margin: 0;
-  padding: 30px;
-  background: var(--loreal-white);
+  padding: 40px 30px;
+  background: linear-gradient(to bottom, 
+    var(--loreal-white) 0%, 
+    rgba(248, 248, 248, 1) 100%);
 }
 
 .product-card {
-  flex: 0 1 calc(33.333% - 14px);
-  border: 2px solid var(--loreal-border);
-  padding: 18px;
-  border-radius: 12px;
+  flex: 0 1 calc(33.333% - 16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  border-radius: 16px;
   display: flex;
-  gap: 15px;
+  gap: 16px;
   min-height: 170px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   background: var(--loreal-white);
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+/* Circular motif in corner */
 .product-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(to bottom, var(--loreal-red) 0%, var(--loreal-gold) 100%);
+  top: -30px;
+  right: -30px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    rgba(227, 6, 19, 0.03) 0%, 
+    transparent 70%);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.35s ease;
 }
 
 .product-card:hover {
   border-color: var(--loreal-gold);
-  box-shadow: 0 6px 20px rgba(227, 165, 53, 0.2);
-  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.15);
+  transform: translateY(-4px);
 }
 
 .product-card:hover::before {
@@ -681,44 +828,48 @@ body {
 
 .product-card.selected {
   border: 2px solid var(--loreal-red);
-  background: linear-gradient(to bottom right, rgba(255, 0, 59, 0.02) 0%, rgba(227, 165, 53, 0.02) 100%);
-  box-shadow: 0 6px 24px rgba(255, 0, 59, 0.15);
+  background: linear-gradient(135deg, 
+    rgba(227, 6, 19, 0.02) 0%, 
+    rgba(212, 175, 55, 0.02) 100%);
+  box-shadow: 0 8px 28px rgba(227, 6, 19, 0.12);
 }
 
 .product-card.selected::before {
   opacity: 1;
-  width: 4px;
+  background: radial-gradient(circle, 
+    rgba(227, 6, 19, 0.08) 0%, 
+    transparent 70%);
 }
 
 /* Add checkmark indicator for selected products */
 .product-card.selected::after {
   content: "✓";
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, var(--loreal-red) 0%, #d40032 100%);
+  top: 14px;
+  right: 14px;
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
   color: var(--loreal-white);
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 16px;
-  box-shadow: 0 2px 8px rgba(255, 0, 59, 0.4);
-  animation: checkmark-pop 0.3s ease;
+  box-shadow: 0 3px 10px rgba(227, 6, 19, 0.35);
+  animation: checkmark-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes checkmark-pop {
   0% {
-    transform: scale(0);
+    transform: scale(0) rotate(-180deg);
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.2) rotate(10deg);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
 }
 
@@ -783,10 +934,12 @@ body {
 /* selected products */
 .selected-products {
   margin: 0 30px 30px;
-  padding: 25px;
-  border: 2px solid var(--loreal-border);
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(255, 0, 59, 0.03) 0%, rgba(227, 165, 53, 0.03) 100%);
+  padding: 28px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  background: linear-gradient(135deg, 
+    rgba(227, 6, 19, 0.02) 0%, 
+    rgba(212, 175, 55, 0.02) 100%);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
@@ -799,6 +952,9 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 18px;
 }
 
 #selectedProductsList {
@@ -815,34 +971,36 @@ body {
   gap: 10px;
   padding: 10px 16px;
   background: var(--loreal-white);
-  border: 2px solid var(--loreal-border);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 25px;
   font-size: 14px;
   font-weight: 500;
   color: var(--loreal-text);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: chip-appear 0.3s ease;
+  letter-spacing: 0.3px;
 }
 
 @keyframes chip-appear {
   from {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.85) translateY(10px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
 .selected-product-chip:hover {
   border-color: var(--loreal-red);
-  box-shadow: 0 4px 12px rgba(255, 0, 59, 0.15);
+  box-shadow: 0 4px 14px rgba(227, 6, 19, 0.15);
+  transform: translateY(-2px);
 }
 
 .selected-product-chip button {
-  background: linear-gradient(135deg, var(--loreal-red) 0%, #d40032 100%);
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
   border: none;
   cursor: pointer;
   font-size: 16px;
@@ -854,7 +1012,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: bold;
 }
 
@@ -909,15 +1067,15 @@ body {
   font-size: 17px;
   font-weight: 600;
   color: var(--loreal-white);
-  background: linear-gradient(135deg, var(--loreal-red) 0%, var(--loreal-gold) 100%);
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  box-shadow: 0 4px 16px rgba(255, 0, 59, 0.3);
+  box-shadow: 0 6px 20px rgba(227, 6, 19, 0.25);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   overflow: hidden;
 }
 
@@ -928,8 +1086,8 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 0.6s ease;
 }
 
 .generate-btn:hover::before {
@@ -937,14 +1095,14 @@ body {
 }
 
 .generate-btn:hover {
-  background: linear-gradient(135deg, #d40032 0%, #c98f2a 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(255, 0, 59, 0.4);
+  background: linear-gradient(135deg, #9A0410 0%, var(--loreal-red) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(227, 6, 19, 0.35);
 }
 
 .generate-btn:active {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 0, 59, 0.3);
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.2);
 }
 
 .generate-btn:disabled {
@@ -952,6 +1110,7 @@ body {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  opacity: 0.6;
 }
 
 .generate-btn i {
@@ -966,14 +1125,14 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   animation: modal-fade-in 0.3s ease;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 @keyframes modal-fade-in {
@@ -987,60 +1146,66 @@ body {
 
 .modal-content {
   background: var(--loreal-white);
-  border-radius: 16px;
+  border-radius: 20px;
   max-width: 600px;
   width: 90%;
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: modal-slide-in 0.3s ease;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  animation: modal-slide-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 @keyframes modal-slide-in {
   from {
-    transform: translateY(-50px);
+    transform: translateY(-60px) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
 
 .modal-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 18px;
+  right: 18px;
   background: var(--loreal-white);
-  border: 2px solid var(--loreal-border);
+  border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--loreal-light-text);
   font-size: 18px;
   z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modal-close:hover {
   background: var(--loreal-red);
   color: var(--loreal-white);
   border-color: var(--loreal-red);
-  transform: rotate(90deg);
+  transform: rotate(90deg) scale(1.05);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.3);
 }
 
 .modal-header {
-  padding: 30px;
-  border-bottom: 2px solid var(--loreal-border);
+  padding: 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   gap: 20px;
   align-items: flex-start;
-  background: linear-gradient(to bottom, var(--loreal-white) 0%, var(--loreal-gray) 100%);
+  background: linear-gradient(to bottom, 
+    var(--loreal-white) 0%, 
+    rgba(248, 248, 248, 1) 100%);
+  border-radius: 20px 20px 0 0;
 }
 
 .modal-image {
@@ -1048,10 +1213,11 @@ body {
   height: 120px;
   object-fit: contain;
   border-radius: 12px;
-  border: 2px solid var(--loreal-border);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   background: var(--loreal-white);
-  padding: 10px;
+  padding: 12px;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .modal-title-section {
@@ -1277,6 +1443,843 @@ body {
 
 [dir="rtl"] .product-card {
   animation: slideInRTL 0.3s ease-out;
+}
+
+[dir="rtl"] .message {
+  animation: slideInRTL 0.3s ease-out;
+}
+
+/* ========================================
+   🌙 DARK MODE STYLES
+   ======================================== */
+
+.dark-mode {
+  --loreal-gray: #1a1a1a;
+  --loreal-white: #2a2a2a;
+  --loreal-text: #e8e8e8;
+  --loreal-light-text: #b8b8b8;
+  --loreal-border: #3a3a3a;
+  --loreal-dark: #f5f5f5;
+  --loreal-black: #0a0a0a;
+}
+
+.dark-mode body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+.dark-mode .page-wrapper {
+  background: #2a2a2a;
+  box-shadow: 0 0 50px rgba(227, 6, 19, 0.2);
+}
+
+.dark-mode .product-card {
+  background: #2f2f2f;
+  border-color: #3a3a3a;
+}
+
+.dark-mode .product-card:hover {
+  box-shadow: 0 8px 28px rgba(227, 6, 19, 0.25);
+  border-color: var(--loreal-gold);
+}
+
+.dark-mode .chat-window {
+  background: #1a1a1a;
+}
+
+.dark-mode .user-message {
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
+  color: white;
+}
+
+.dark-mode .ai-message {
+  background: #2f2f2f;
+  color: #e8e8e8;
+  border: 1px solid #3a3a3a;
+}
+
+.dark-mode .selected-products {
+  background: #1a1a1a;
+  border-color: #3a3a3a;
+}
+
+.dark-mode .search-box input {
+  background: #2f2f2f;
+  border-color: #3a3a3a;
+  color: #e8e8e8;
+}
+
+.dark-mode .modal-content {
+  background: #2a2a2a;
+  color: #e8e8e8;
+  border: 1px solid #3a3a3a;
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  position: absolute;
+  top: 20px;
+  right: 140px;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  color: var(--loreal-white);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode-toggle:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px) rotate(20deg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+[dir="rtl"] .dark-mode-toggle {
+  right: auto;
+  left: 140px;
+}
+
+/* ========================================
+   ✨ HEADER ACTION BUTTONS
+   ======================================== */
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.header-action-btn {
+  background: rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50px;
+  padding: 12px 24px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.header-action-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.header-action-btn i {
+  font-size: 16px;
+}
+
+.header-action-btn .badge {
+  background: var(--loreal-gold);
+  color: var(--loreal-dark);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* ========================================
+   📊 ROUTINE TIMELINE VISUALIZATION
+   ======================================== */
+
+.routine-timeline {
+  padding: 40px 30px;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+  border-radius: 12px;
+  margin: 20px 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .routine-timeline {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+.routine-timeline h2 {
+  text-align: center;
+  color: var(--loreal-red);
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.timeline-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .timeline-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.timeline-period {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.dark-mode .timeline-period {
+  background: #333;
+}
+
+.timeline-period.am {
+  border-color: #ffd700;
+}
+
+.timeline-period.pm {
+  border-color: #4a90e2;
+}
+
+.period-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--loreal-border);
+}
+
+.period-header i {
+  font-size: 24px;
+}
+
+.timeline-period.am .period-header i {
+  color: #ffd700;
+}
+
+.timeline-period.pm .period-header i {
+  color: #4a90e2;
+}
+
+.period-header h3 {
+  font-size: 20px;
+  color: var(--loreal-text);
+}
+
+.timeline-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.timeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  background: var(--loreal-gray);
+  border-radius: 8px;
+  border-left: 4px solid var(--loreal-red);
+  transition: all 0.3s ease;
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timeline-step:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+  background: var(--loreal-red);
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  color: var(--loreal-text);
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.step-content p {
+  color: var(--loreal-light-text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ========================================
+   🎯 SKIN QUIZ MODAL
+   ======================================== */
+
+.skin-quiz-modal .modal-content {
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.quiz-content {
+  padding: 40px;
+}
+
+.quiz-question {
+  margin-bottom: 30px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.quiz-question h3 {
+  color: var(--loreal-red);
+  margin-bottom: 20px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.quiz-question h3 i {
+  font-size: 24px;
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.quiz-option {
+  background: rgba(248, 248, 248, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.quiz-option::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(227, 6, 19, 0.08), transparent);
+  transition: left 0.6s ease;
+}
+
+.quiz-option:hover::before {
+  left: 100%;
+}
+
+.quiz-option:hover {
+  border-color: var(--loreal-gold);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.15);
+}
+
+.quiz-option.selected {
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
+  color: white;
+  border-color: var(--loreal-red);
+  box-shadow: 0 6px 20px rgba(227, 6, 19, 0.25);
+  transform: scale(1.02);
+}
+
+.quiz-option i {
+  font-size: 32px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.quiz-btn {
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.25);
+}
+
+.quiz-btn:hover {
+  background: linear-gradient(135deg, #9A0410 0%, var(--loreal-red) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(227, 6, 19, 0.35);
+}
+
+.quiz-btn:disabled {
+  background: linear-gradient(135deg, #ccc 0%, #999 100%);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.quiz-progress {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--loreal-gray);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--loreal-red), var(--loreal-gold));
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.quiz-results {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.quiz-results h3 {
+  color: var(--loreal-red);
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.quiz-results .result-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounceIn 0.6s ease-out;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.quiz-recommendations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.quiz-recommendation-card {
+  background: var(--loreal-gray);
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  border: 2px solid var(--loreal-border);
+  transition: all 0.3s ease;
+}
+
+.quiz-recommendation-card:hover {
+  border-color: var(--loreal-red);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   💝 FAVORITES & COMPARE STYLES
+   ======================================== */
+
+.favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.favorite-btn i {
+  color: #ccc;
+  font-size: 18px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.favorite-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.15);
+}
+
+.favorite-btn:hover i {
+  color: var(--loreal-red);
+  transform: scale(1.25);
+}
+
+.favorite-btn.active i {
+  color: var(--loreal-red);
+  animation: heartBeat 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.4); }
+  50% { transform: scale(1.1); }
+  75% { transform: scale(1.3); }
+}
+
+.compare-checkbox {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+}
+
+.compare-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.compare-checkbox label {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.compare-checkbox label:hover {
+  border-color: var(--loreal-gold);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+}
+
+.compare-checkbox input[type="checkbox"]:checked + label {
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
+  border-color: var(--loreal-red);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.25);
+}
+
+.compare-checkbox label i {
+  color: white;
+  font-size: 14px;
+  display: none;
+}
+
+.compare-checkbox input[type="checkbox"]:checked + label i {
+  display: block;
+  animation: checkPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0) rotate(-45deg); }
+  50% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.compare-content {
+  max-width: 1000px;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.compare-card {
+  background: var(--loreal-gray);
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid var(--loreal-border);
+}
+
+.compare-card h3 {
+  color: var(--loreal-red);
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.compare-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.compare-features {
+  list-style: none;
+  padding: 0;
+}
+
+.compare-features li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--loreal-border);
+  font-size: 14px;
+}
+
+.compare-features li:last-child {
+  border-bottom: none;
+}
+
+.compare-features strong {
+  color: var(--loreal-text);
+  display: inline-block;
+  min-width: 100px;
+}
+
+/* ========================================
+   🎤 VOICE INPUT & CHAT ENHANCEMENTS
+   ======================================== */
+
+.chat-header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.voice-input-btn,
+.export-pdf-btn,
+.share-routine-btn {
+  background: rgba(227, 6, 19, 0.08);
+  border: 1px solid rgba(227, 6, 19, 0.2);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--loreal-red);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.voice-input-btn:hover,
+.export-pdf-btn:hover,
+.share-routine-btn:hover {
+  background: rgba(227, 6, 19, 0.15);
+  border-color: var(--loreal-red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.2);
+}
+
+.voice-input-btn.recording {
+  background: linear-gradient(135deg, var(--loreal-red) 0%, #B8050F 100%);
+  color: white;
+  border-color: var(--loreal-red);
+  animation: recordPulse 1.5s infinite;
+}
+
+@keyframes recordPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.7); }
+  50% { box-shadow: 0 0 0 12px rgba(227, 6, 19, 0); }
+}
+
+/* ========================================
+   📱 SHARE MODAL
+   ======================================== */
+
+.share-link-box {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.share-link-box input {
+  flex: 1;
+  padding: 12px 20px;
+  border: 2px solid var(--loreal-border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--loreal-gray);
+}
+
+.share-link-box button {
+  background: var(--loreal-red);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-link-box button:hover {
+  background: #d40032;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   🌟 AI RECOMMENDATION BADGES
+   ======================================== */
+
+.ai-recommended-badge {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--loreal-gold) 0%, #d4941f 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(227, 165, 53, 0.4);
+  z-index: 2;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.ai-recommended-badge i {
+  font-size: 12px;
+}
+
+/* ========================================
+   🎨 ENHANCED ANIMATIONS
+   ======================================== */
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-card,
+.message,
+.timeline-step {
+  animation: slideIn 0.4s ease-out;
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+.product-card,
+.quiz-option,
+.compare-card,
+.favorite-btn,
+.header-action-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   📱 RESPONSIVE ENHANCEMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+  .header-actions {
+    gap: 8px;
+  }
+  
+  .header-action-btn span {
+    display: none;
+  }
+  
+  .header-action-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  
+  .quiz-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .compare-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 [dir="rtl"] .message {

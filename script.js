@@ -727,5 +727,751 @@ if (languageToggleBtn) {
   languageToggleBtn.addEventListener('click', toggleLanguage);
 }
 
+/* ========================================
+   🌙 DARK MODE FUNCTIONALITY
+   ======================================== */
+
+const darkModeToggleBtn = document.getElementById('darkModeToggle');
+const STORAGE_KEY_DARK_MODE = 'loreal_dark_mode';
+
+/* Toggle dark mode */
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  
+  /* Update icon */
+  const icon = darkModeToggleBtn.querySelector('i');
+  if (icon) {
+    icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  }
+  
+  /* Save preference */
+  try {
+    localStorage.setItem(STORAGE_KEY_DARK_MODE, isDark ? 'enabled' : 'disabled');
+    console.log(`Dark mode ${isDark ? 'enabled' : 'disabled'}`);
+  } catch (error) {
+    console.error("Error saving dark mode preference:", error);
+  }
+}
+
+/* Load dark mode preference */
+function loadDarkModePreference() {
+  try {
+    const savedMode = localStorage.getItem(STORAGE_KEY_DARK_MODE);
+    if (savedMode === 'enabled') {
+      document.body.classList.add('dark-mode');
+      const icon = darkModeToggleBtn.querySelector('i');
+      if (icon) {
+        icon.className = 'fa-solid fa-sun';
+      }
+      console.log('Dark mode loaded from preferences');
+    }
+  } catch (error) {
+    console.error("Error loading dark mode preference:", error);
+  }
+}
+
+/* Add event listener */
+if (darkModeToggleBtn) {
+  darkModeToggleBtn.addEventListener('click', toggleDarkMode);
+}
+
+/* ========================================
+   💝 FAVORITES FUNCTIONALITY
+   ======================================== */
+
+const favoritesBtn = document.getElementById('favoritesBtn');
+const favoritesModal = document.getElementById('favoritesModal');
+const favoritesContainer = document.getElementById('favoritesContainer');
+const favoritesCountBadge = document.getElementById('favoritesCount');
+const STORAGE_KEY_FAVORITES = 'loreal_favorites';
+
+let favoriteProducts = [];
+
+/* Load favorites from localStorage */
+function loadFavorites() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
+    if (saved) {
+      favoriteProducts = JSON.parse(saved);
+      updateFavoritesCount();
+    }
+  } catch (error) {
+    console.error("Error loading favorites:", error);
+    favoriteProducts = [];
+  }
+}
+
+/* Save favorites to localStorage */
+function saveFavorites() {
+  try {
+    localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(favoriteProducts));
+    updateFavoritesCount();
+  } catch (error) {
+    console.error("Error saving favorites:", error);
+  }
+}
+
+/* Toggle favorite status */
+function toggleFavorite(productId) {
+  const index = favoriteProducts.indexOf(productId);
+  if (index > -1) {
+    favoriteProducts.splice(index, 1);
+  } else {
+    favoriteProducts.push(productId);
+  }
+  saveFavorites();
+  updateFavoriteButtons();
+}
+
+/* Update favorite button states */
+function updateFavoriteButtons() {
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    const productId = parseInt(card.dataset.productId);
+    let favoriteBtn = card.querySelector('.favorite-btn');
+    
+    /* Create favorite button if it doesn't exist */
+    if (!favoriteBtn) {
+      favoriteBtn = document.createElement('button');
+      favoriteBtn.className = 'favorite-btn';
+      favoriteBtn.setAttribute('aria-label', 'Add to favorites');
+      favoriteBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+      favoriteBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleFavorite(productId);
+      };
+      card.appendChild(favoriteBtn);
+    }
+    
+    /* Update button state */
+    const isFavorite = favoriteProducts.includes(productId);
+    favoriteBtn.classList.toggle('active', isFavorite);
+    const icon = favoriteBtn.querySelector('i');
+    if (icon) {
+      icon.className = isFavorite ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+    }
+  });
+}
+
+/* Update favorites count badge */
+function updateFavoritesCount() {
+  if (favoritesCountBadge) {
+    favoritesCountBadge.textContent = favoriteProducts.length;
+    favoritesCountBadge.style.display = favoriteProducts.length > 0 ? 'flex' : 'none';
+  }
+}
+
+/* Show favorites modal */
+function showFavorites() {
+  if (!favoritesModal) return;
+  
+  const favoriteProductsList = allProducts.filter(p => favoriteProducts.includes(p.id));
+  
+  if (favoriteProductsList.length === 0) {
+    favoritesContainer.innerHTML = `
+      <div class="empty-state" style="text-align: center; padding: 40px;">
+        <i class="fa-solid fa-heart-crack" style="font-size: 60px; color: #ccc; margin-bottom: 20px; display: block;"></i>
+        <p>No favorites yet! Click the heart icon on products to save them here.</p>
+      </div>
+    `;
+  } else {
+    favoritesContainer.innerHTML = `
+      <div class="products-grid">
+        ${favoriteProductsList.map(product => `
+          <div class="product-card" data-product-id="${product.id}">
+            <button class="favorite-btn active" onclick="event.stopPropagation(); toggleFavorite(${product.id})">
+              <i class="fa-solid fa-heart"></i>
+            </button>
+            <img src="${product.image}" alt="${product.name}">
+            <div class="product-info">
+              <h3>${product.name}</h3>
+              <p>${product.brand}</p>
+              <button class="info-btn" onclick="showProductDetails(${product.id})">
+                <i class="fa-solid fa-info-circle"></i> Details
+              </button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  
+  favoritesModal.style.display = 'flex';
+}
+
+/* Close favorites modal */
+function closeFavorites() {
+  if (favoritesModal) {
+    favoritesModal.style.display = 'none';
+  }
+}
+
+/* Event listener for favorites button */
+if (favoritesBtn) {
+  favoritesBtn.addEventListener('click', showFavorites);
+}
+
+/* ========================================
+   🎯 SKIN QUIZ FUNCTIONALITY
+   ======================================== */
+
+const skinQuizBtn = document.getElementById('skinQuizBtn');
+const skinQuizModal = document.getElementById('skinQuizModal');
+const quizContainer = document.getElementById('quizContainer');
+
+const quizQuestions = [
+  {
+    id: 1,
+    question: "What's your skin type?",
+    icon: "fa-droplet",
+    options: [
+      { value: "oily", label: "Oily", icon: "fa-oil-can" },
+      { value: "dry", label: "Dry", icon: "fa-sun" },
+      { value: "combination", label: "Combination", icon: "fa-yin-yang" },
+      { value: "normal", label: "Normal", icon: "fa-check-circle" }
+    ]
+  },
+  {
+    id: 2,
+    question: "What's your main skin concern?",
+    icon: "fa-magnifying-glass",
+    options: [
+      { value: "acne", label: "Acne", icon: "fa-circle-dot" },
+      { value: "aging", label: "Anti-Aging", icon: "fa-clock" },
+      { value: "dark-spots", label: "Dark Spots", icon: "fa-circle-half-stroke" },
+      { value: "sensitivity", label: "Sensitivity", icon: "fa-heart-pulse" }
+    ]
+  },
+  {
+    id: 3,
+    question: "How much time do you have for your routine?",
+    icon: "fa-hourglass-half",
+    options: [
+      { value: "5-min", label: "5 Minutes", icon: "fa-forward" },
+      { value: "10-min", label: "10 Minutes", icon: "fa-forward-step" },
+      { value: "15-min", label: "15+ Minutes", icon: "fa-clock" }
+    ]
+  },
+  {
+    id: 4,
+    question: "What's your budget preference?",
+    icon: "fa-wallet",
+    options: [
+      { value: "budget", label: "Budget-Friendly", icon: "fa-coins" },
+      { value: "mid-range", label: "Mid-Range", icon: "fa-money-bill" },
+      { value: "premium", label: "Premium", icon: "fa-gem" }
+    ]
+  }
+];
+
+let currentQuizQuestion = 0;
+let quizAnswers = {};
+
+/* Start skin quiz */
+function startSkinQuiz() {
+  currentQuizQuestion = 0;
+  quizAnswers = {};
+  showQuizQuestion();
+  if (skinQuizModal) {
+    skinQuizModal.style.display = 'flex';
+  }
+}
+
+/* Show current quiz question */
+function showQuizQuestion() {
+  if (currentQuizQuestion >= quizQuestions.length) {
+    showQuizResults();
+    return;
+  }
+  
+  const question = quizQuestions[currentQuizQuestion];
+  const progress = ((currentQuizQuestion / quizQuestions.length) * 100).toFixed(0);
+  
+  quizContainer.innerHTML = `
+    <div class="quiz-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: ${progress}%"></div>
+      </div>
+      <p>Question ${currentQuizQuestion + 1} of ${quizQuestions.length}</p>
+    </div>
+    
+    <div class="quiz-question">
+      <h3><i class="fa-solid ${question.icon}"></i> ${question.question}</h3>
+      <div class="quiz-options">
+        ${question.options.map(option => `
+          <div class="quiz-option" onclick="selectQuizOption('${question.id}', '${option.value}')">
+            <i class="fa-solid ${option.icon}"></i>
+            <p>${option.label}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <div class="quiz-nav">
+      <button class="quiz-btn" onclick="previousQuizQuestion()" ${currentQuizQuestion === 0 ? 'disabled' : ''}>
+        <i class="fa-solid fa-arrow-left"></i> Previous
+      </button>
+      <button class="quiz-btn" onclick="nextQuizQuestion()" ${!quizAnswers[question.id] ? 'disabled' : ''} id="nextBtn">
+        Next <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  `;
+}
+
+/* Select quiz option */
+function selectQuizOption(questionId, value) {
+  quizAnswers[questionId] = value;
+  
+  /* Update UI */
+  document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+  event.target.closest('.quiz-option').classList.add('selected');
+  
+  /* Enable next button */
+  const nextBtn = document.getElementById('nextBtn');
+  if (nextBtn) {
+    nextBtn.disabled = false;
+  }
+}
+
+/* Next quiz question */
+function nextQuizQuestion() {
+  currentQuizQuestion++;
+  showQuizQuestion();
+}
+
+/* Previous quiz question */
+function previousQuizQuestion() {
+  if (currentQuizQuestion > 0) {
+    currentQuizQuestion--;
+    showQuizQuestion();
+  }
+}
+
+/* Show quiz results */
+function showQuizResults() {
+  /* Generate personalized recommendations based on answers */
+  const recommendations = generateRecommendations(quizAnswers);
+  
+  quizContainer.innerHTML = `
+    <div class="quiz-results">
+      <div class="result-icon">✨</div>
+      <h3>Your Personalized Recommendations</h3>
+      <p style="margin-bottom: 20px; color: var(--loreal-light-text);">
+        Based on your answers, we've curated the perfect routine for you!
+      </p>
+      
+      <div class="quiz-recommendations">
+        ${recommendations.map(rec => `
+          <div class="quiz-recommendation-card">
+            <i class="fa-solid ${rec.icon}" style="font-size: 32px; color: var(--loreal-red); margin-bottom: 10px;"></i>
+            <h4>${rec.title}</h4>
+            <p style="font-size: 12px; color: var(--loreal-light-text); margin-top: 5px;">${rec.description}</p>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div style="margin-top: 30px;">
+        <button class="quiz-btn" onclick="applyQuizRecommendations()">
+          <i class="fa-solid fa-check"></i> Apply Recommendations
+        </button>
+        <button class="quiz-btn" onclick="closeSkinQuiz()" style="background: #666; margin-left: 10px;">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+/* Generate recommendations based on quiz answers */
+function generateRecommendations(answers) {
+  const recommendations = [];
+  
+  /* Skin type recommendation */
+  if (answers[1] === 'oily') {
+    recommendations.push({ icon: 'fa-droplet', title: 'Oil Control', description: 'Look for mattifying cleansers' });
+  } else if (answers[1] === 'dry') {
+    recommendations.push({ icon: 'fa-water', title: 'Hydration Boost', description: 'Focus on moisturizing products' });
+  } else if (answers[1] === 'combination') {
+    recommendations.push({ icon: 'fa-yin-yang', title: 'Balanced Care', description: 'Use targeted treatments' });
+  }
+  
+  /* Concern recommendation */
+  if (answers[2] === 'acne') {
+    recommendations.push({ icon: 'fa-shield', title: 'Acne Treatment', description: 'Gentle yet effective formulas' });
+  } else if (answers[2] === 'aging') {
+    recommendations.push({ icon: 'fa-star', title: 'Anti-Aging', description: 'Retinol & peptides' });
+  } else if (answers[2] === 'dark-spots') {
+    recommendations.push({ icon: 'fa-sun', title: 'Brightening', description: 'Vitamin C serums' });
+  }
+  
+  /* Time recommendation */
+  if (answers[3] === '5-min') {
+    recommendations.push({ icon: 'fa-bolt', title: 'Quick Routine', description: '3-step essentials' });
+  } else if (answers[3] === '15-min') {
+    recommendations.push({ icon: 'fa-spa', title: 'Full Routine', description: 'Complete 7-step care' });
+  }
+  
+  /* Budget recommendation */
+  if (answers[4] === 'premium') {
+    recommendations.push({ icon: 'fa-gem', title: 'Premium Products', description: 'Luxury formulations' });
+  } else if (answers[4] === 'budget') {
+    recommendations.push({ icon: 'fa-piggy-bank', title: 'Best Value', description: 'Effective & affordable' });
+  }
+  
+  return recommendations;
+}
+
+/* Apply quiz recommendations */
+function applyQuizRecommendations() {
+  /* Filter products based on quiz answers */
+  const skinType = quizAnswers[1] || '';
+  const concern = quizAnswers[2] || '';
+  
+  /* This is a simplified version - you could make this much more sophisticated */
+  chatWindow.innerHTML += `
+    <div class="message ai-message">
+      <p><strong>✨ Quiz Results Applied!</strong></p>
+      <p>I've noted your preferences:</p>
+      <ul style="margin-left: 20px; margin-top: 10px;">
+        <li>Skin Type: ${skinType}</li>
+        <li>Main Concern: ${concern}</li>
+      </ul>
+      <p style="margin-top: 10px;">Select products from the grid above and click "Generate Routine" for personalized recommendations based on your quiz results!</p>
+    </div>
+  `;
+  
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  closeSkinQuiz();
+}
+
+/* Close skin quiz */
+function closeSkinQuiz() {
+  if (skinQuizModal) {
+    skinQuizModal.style.display = 'none';
+  }
+}
+
+/* Event listener for skin quiz button */
+if (skinQuizBtn) {
+  skinQuizBtn.addEventListener('click', startSkinQuiz);
+}
+
+/* ========================================
+   📊 PRODUCT COMPARISON
+   ======================================== */
+
+const compareBtn = document.getElementById('compareBtn');
+const compareModal = document.getElementById('compareModal');
+const compareContainer = document.getElementById('compareContainer');
+
+let compareProducts = [];
+
+/* Show compare modal */
+function showCompareModal() {
+  if (compareProducts.length === 0) {
+    compareContainer.innerHTML = `
+      <div class="empty-state" style="text-align: center; padding: 40px;">
+        <i class="fa-solid fa-scale-unbalanced" style="font-size: 60px; color: #ccc; margin-bottom: 20px; display: block;"></i>
+        <p>No products selected for comparison. Check the boxes on products to compare them!</p>
+      </div>
+    `;
+  } else {
+    const productsToCompare = allProducts.filter(p => compareProducts.includes(p.id));
+    
+    compareContainer.innerHTML = `
+      <div class="compare-grid">
+        ${productsToCompare.map(product => `
+          <div class="compare-card">
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <ul class="compare-features">
+              <li><strong>Brand:</strong> ${product.brand}</li>
+              <li><strong>Category:</strong> ${product.category}</li>
+              <li><strong>For:</strong> ${product.skinType || 'All skin types'}</li>
+              <li class="compare-description">${product.description}</li>
+            </ul>
+            <button class="quiz-btn" onclick="toggleProductSelection(${product.id})" style="width: 100%; margin-top: 15px;">
+              <i class="fa-solid fa-plus"></i> Add to Routine
+            </button>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top: 20px; text-align: center;">
+        <button class="quiz-btn" onclick="clearCompare()">
+          <i class="fa-solid fa-trash"></i> Clear Comparison
+        </button>
+      </div>
+    `;
+  }
+  
+  if (compareModal) {
+    compareModal.style.display = 'flex';
+  }
+}
+
+/* Toggle compare product */
+function toggleCompare(productId) {
+  const index = compareProducts.indexOf(productId);
+  if (index > -1) {
+    compareProducts.splice(index, 1);
+  } else {
+    if (compareProducts.length >= 4) {
+      alert('You can compare up to 4 products at a time.');
+      return;
+    }
+    compareProducts.push(productId);
+  }
+  updateCompareCheckboxes();
+}
+
+/* Update compare checkboxes */
+function updateCompareCheckboxes() {
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    const productId = parseInt(card.dataset.productId);
+    let compareCheckbox = card.querySelector('.compare-checkbox');
+    
+    /* Create compare checkbox if it doesn't exist */
+    if (!compareCheckbox) {
+      compareCheckbox = document.createElement('div');
+      compareCheckbox.className = 'compare-checkbox';
+      compareCheckbox.innerHTML = `
+        <input type="checkbox" id="compare-${productId}" />
+        <label for="compare-${productId}">
+          <i class="fa-solid fa-check"></i>
+        </label>
+      `;
+      const checkbox = compareCheckbox.querySelector('input');
+      checkbox.onchange = () => toggleCompare(productId);
+      card.appendChild(compareCheckbox);
+    }
+    
+    /* Update checkbox state */
+    const checkbox = compareCheckbox.querySelector('input');
+    if (checkbox) {
+      checkbox.checked = compareProducts.includes(productId);
+    }
+  });
+}
+
+/* Clear compare */
+function clearCompare() {
+  compareProducts = [];
+  updateCompareCheckboxes();
+  showCompareModal();
+}
+
+/* Close compare modal */
+function closeCompare() {
+  if (compareModal) {
+    compareModal.style.display = 'none';
+  }
+}
+
+/* Event listener for compare button */
+if (compareBtn) {
+  compareBtn.addEventListener('click', showCompareModal);
+}
+
+/* ========================================
+   🎤 VOICE INPUT
+   ======================================== */
+
+const voiceInputBtn = document.getElementById('voiceInputBtn');
+
+let recognition = null;
+let isRecording = false;
+
+/* Initialize speech recognition if available */
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+  
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    userInput.value = transcript;
+    isRecording = false;
+    voiceInputBtn.classList.remove('recording');
+    console.log('Voice input:', transcript);
+  };
+  
+  recognition.onerror = (event) => {
+    console.error('Speech recognition error:', event.error);
+    isRecording = false;
+    voiceInputBtn.classList.remove('recording');
+  };
+  
+  recognition.onend = () => {
+    isRecording = false;
+    voiceInputBtn.classList.remove('recording');
+  };
+}
+
+/* Toggle voice recording */
+function toggleVoiceInput() {
+  if (!recognition) {
+    alert('Voice input is not supported in your browser. Please use Chrome or Edge.');
+    return;
+  }
+  
+  if (isRecording) {
+    recognition.stop();
+    isRecording = false;
+    voiceInputBtn.classList.remove('recording');
+  } else {
+    recognition.start();
+    isRecording = true;
+    voiceInputBtn.classList.add('recording');
+  }
+}
+
+/* Event listener for voice input button */
+if (voiceInputBtn) {
+  voiceInputBtn.addEventListener('click', toggleVoiceInput);
+}
+
+/* ========================================
+   📄 EXPORT TO TEXT FILE
+   ======================================== */
+
+const exportPDFBtn = document.getElementById('exportPDFBtn');
+
+/* Export routine to text file */
+async function exportRoutineToPDF() {
+  /* Get conversation content */
+  const messages = chatWindow.querySelectorAll('.message');
+  
+  if (messages.length === 0) {
+    alert('No routine to export! Generate a routine first.');
+    return;
+  }
+  
+  /* Create a formatted text version */
+  let content = 'L\'ORÉAL PERSONALIZED ROUTINE\n';
+  content += '=' .repeat(50) + '\n\n';
+  
+  messages.forEach(msg => {
+    const isUser = msg.classList.contains('user-message');
+    const text = msg.textContent.trim();
+    content += `${isUser ? 'You' : 'AI Advisor'}: ${text}\n\n`;
+  });
+  
+  /* Create a blob and download */
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'loreal-routine.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  console.log('Routine exported as text file');
+}
+
+/* Event listener for export button */
+if (exportPDFBtn) {
+  exportPDFBtn.addEventListener('click', exportRoutineToPDF);
+}
+
+/* ========================================
+   🔗 SHARE ROUTINE
+   ======================================== */
+
+const shareRoutineBtn = document.getElementById('shareRoutineBtn');
+const shareModal = document.getElementById('shareModal');
+const shareLinkInput = document.getElementById('shareLink');
+
+/* Generate shareable link */
+function shareRoutine() {
+  /* Create a simple share link with selected products */
+  const productIds = selectedProducts.join(',');
+  const shareUrl = `${window.location.origin}${window.location.pathname}?products=${productIds}`;
+  
+  if (shareLinkInput) {
+    shareLinkInput.value = shareUrl;
+  }
+  
+  if (shareModal) {
+    shareModal.style.display = 'flex';
+  }
+}
+
+/* Copy share link */
+function copyShareLink() {
+  if (shareLinkInput) {
+    shareLinkInput.select();
+    document.execCommand('copy');
+    
+    /* Show feedback */
+    const btn = event.target.closest('button');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(() => {
+      btn.innerHTML = originalHTML;
+    }, 2000);
+  }
+}
+
+/* Close share modal */
+function closeShareModal() {
+  if (shareModal) {
+    shareModal.style.display = 'none';
+  }
+}
+
+/* Event listener for share button */
+if (shareRoutineBtn) {
+  shareRoutineBtn.addEventListener('click', shareRoutine);
+}
+
+/* Load shared products from URL on page load */
+function loadSharedProducts() {
+  const params = new URLSearchParams(window.location.search);
+  const sharedProducts = params.get('products');
+  
+  if (sharedProducts) {
+    const productIds = sharedProducts.split(',').map(id => parseInt(id));
+    selectedProducts = productIds.filter(id => allProducts.some(p => p.id === id));
+    saveSelectedProductsToStorage();
+    displaySelectedProducts();
+    updateProductCardStates();
+    
+    /* Show a message */
+    setTimeout(() => {
+      chatWindow.innerHTML += `
+        <div class="message ai-message">
+          <p>✨ Welcome! I've loaded a shared routine for you. These products have been recommended by someone who knows great skincare!</p>
+        </div>
+      `;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }, 500);
+  }
+}
+
 /* Initialize the app when page loads */
+async function initializeApp() {
+  allProducts = await loadProducts();
+  loadSelectedProductsFromStorage();
+  loadLanguagePreference();
+  loadDarkModePreference();
+  loadFavorites();
+  displayProducts(allProducts);
+  
+  /* Update favorite and compare buttons after products are displayed */
+  setTimeout(() => {
+    updateFavoriteButtons();
+    updateCompareCheckboxes();
+  }, 100);
+  
+  /* Load shared products if URL parameter exists */
+  setTimeout(loadSharedProducts, 500);
+}
+
 initializeApp();
+
