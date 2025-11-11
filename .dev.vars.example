@@ -1,0 +1,9 @@
+# Example environment variables for local development
+# Copy this file to .dev.vars and add your actual API keys
+# .dev.vars is gitignored and will not be committed
+
+# OpenAI API key - Used for standard chat and routine generation
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Mistral API key - Used for web search queries
+MISTRAL_API_KEY=your_mistral_api_key_here

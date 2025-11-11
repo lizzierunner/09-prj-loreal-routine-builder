@@ -1,2 +1,24 @@
-# Secrets file containing API keys
+# Secrets file containing API keys (legacy - no longer used)
 secrets.js
+
+# Cloudflare Worker environment variables (contains API keys)
+.dev.vars
+
+# Node modules (if using Wrangler CLI)
+node_modules/
+
+# Wrangler generated files
+.wrangler/
+dist/
+worker/
+
+# macOS
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
