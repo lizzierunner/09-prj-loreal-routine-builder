@@ -580,6 +580,9 @@ Format the response as a clear, numbered step-by-step routine I can follow daily
     /* Track analytics */
     trackRoutineGeneration();
     
+    /* Generate results timeline prediction */
+    generateResultsTimeline();
+    
     /* Check if this is the user's first routine and celebrate! */
     const isFirstRoutine = !localStorage.getItem('hasGeneratedRoutine');
     if (isFirstRoutine) {
@@ -2577,3 +2580,145 @@ function rotatePlaceholder() {
 
 /* Rotate placeholder every 3 seconds */
 setInterval(rotatePlaceholder, 3000);
+
+/* ========================================
+   ⏱️ RESULTS TIMELINE PREDICTOR
+   ======================================== */
+
+/* Generate results timeline based on selected products */
+function generateResultsTimeline() {
+  if (selectedProducts.length === 0) return;
+  
+  const resultsSection = document.getElementById('resultsPredictor');
+  const timelineContainer = document.getElementById('resultsTimeline');
+  
+  /* Analyze products to determine expected results */
+  const results = analyzeExpectedResults(selectedProducts);
+  
+  /* Sort results by timeframe (earliest first) */
+  results.sort((a, b) => a.days - b.days);
+  
+  /* Generate timeline HTML */
+  const timelineHTML = results.map((result, index) => `
+    <div class="result-milestone" data-days="${result.days}" style="animation-delay: ${index * 0.1}s">
+      <div class="milestone-marker">
+        <div class="milestone-dot"></div>
+        <div class="milestone-line"></div>
+      </div>
+      <div class="milestone-content">
+        <div class="milestone-time">${result.timeframe}</div>
+        <div class="milestone-title">${result.icon} ${result.title}</div>
+        <div class="milestone-description">${result.description}</div>
+        <div class="milestone-products">
+          ${result.products.map(p => `<span class="product-tag">${p}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+  
+  timelineContainer.innerHTML = timelineHTML;
+  resultsSection.style.display = 'block';
+  
+  /* Scroll to results after a brief delay */
+  setTimeout(() => {
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 500);
+}
+
+/* Analyze products and determine expected results timeline */
+function analyzeExpectedResults(products) {
+  const results = [];
+  const processedConcerns = new Set();
+  
+  /* Results timeline database based on ingredients and product types */
+  const resultTimelines = {
+    'immediate': {
+      days: 1,
+      timeframe: 'Immediate - 24 Hours',
+      concerns: ['hydration', 'makeup', 'sunscreen', 'cleanse'],
+      icon: '⚡',
+      title: 'Instant Results',
+      description: 'Immediate hydration, protection, and cleansing benefits'
+    },
+    'quick': {
+      days: 3,
+      timeframe: '3-7 Days',
+      concerns: ['brightness', 'glow', 'radiance', 'texture'],
+      icon: '✨',
+      title: 'Quick Improvements',
+      description: 'Noticeable glow, improved texture, and enhanced radiance'
+    },
+    'shortTerm': {
+      days: 14,
+      timeframe: '2-3 Weeks',
+      concerns: ['acne', 'blemish', 'pore', 'oil control', 'exfoliation'],
+      icon: '��',
+      title: 'Visible Changes',
+      description: 'Reduced breakouts, refined pores, and clearer complexion'
+    },
+    'mediumTerm': {
+      days: 28,
+      timeframe: '4-6 Weeks',
+      concerns: ['fine lines', 'firmness', 'dark spots', 'hyperpigmentation', 'tone'],
+      icon: '🌟',
+      title: 'Significant Progress',
+      description: 'Reduced fine lines, more even tone, and improved firmness'
+    },
+    'longTerm': {
+      days: 84,
+      timeframe: '8-12 Weeks',
+      concerns: ['wrinkles', 'anti-aging', 'collagen', 'elasticity', 'deep repair'],
+      icon: '🏆',
+      title: 'Transformative Results',
+      description: 'Deep wrinkle reduction, enhanced elasticity, and visible rejuvenation'
+    }
+  };
+  
+  /* Check each product for relevant concerns */
+  products.forEach(product => {
+    const productText = `${product.name} ${product.description} ${product.category}`.toLowerCase();
+    const ingredients = product.ingredients ? product.ingredients.join(' ').toLowerCase() : '';
+    const searchText = productText + ' ' + ingredients;
+    
+    /* Match product to result timelines */
+    for (const [key, timeline] of Object.entries(resultTimelines)) {
+      if (processedConcerns.has(key)) continue;
+      
+      const hasMatch = timeline.concerns.some(concern => searchText.includes(concern));
+      
+      if (hasMatch) {
+        results.push({
+          days: timeline.days,
+          timeframe: timeline.timeframe,
+          icon: timeline.icon,
+          title: timeline.title,
+          description: timeline.description,
+          products: [product.name]
+        });
+        processedConcerns.add(key);
+      }
+    }
+  });
+  
+  /* If no specific matches, add generic timeline */
+  if (results.length === 0) {
+    results.push({
+      days: 1,
+      timeframe: 'Immediate',
+      icon: '✨',
+      title: 'Instant Benefits',
+      description: 'Immediate hydration and protection from your skincare routine',
+      products: products.map(p => p.name)
+    });
+    results.push({
+      days: 28,
+      timeframe: '4-6 Weeks',
+      icon: '🌟',
+      title: 'Visible Results',
+      description: 'Consistent use will show noticeable improvements in skin health and appearance',
+      products: products.map(p => p.name)
+    });
+  }
+  
+  return results;
+}
