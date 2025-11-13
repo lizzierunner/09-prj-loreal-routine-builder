@@ -87,6 +87,49 @@
         <div id="searchInfo" class="search-info" style="display: none;"></div>
       </div>
 
+      <!-- Quick Routine Templates -->
+      <div class="routine-templates">
+        <h3><i class="fa-solid fa-bolt"></i> Quick Start Templates</h3>
+        <p class="templates-subtitle">Not sure where to begin? Try one of our expertly curated routines!</p>
+        <div class="templates-grid">
+          <button class="template-btn" data-template="acne-fighting" onclick="applyTemplate('acne-fighting')">
+            <i class="fa-solid fa-shield-heart"></i>
+            <span class="template-name">Acne-Fighting</span>
+            <span class="template-desc">Clear & balanced skin</span>
+          </button>
+          <button class="template-btn" data-template="anti-aging" onclick="applyTemplate('anti-aging')">
+            <i class="fa-solid fa-sparkles"></i>
+            <span class="template-name">Anti-Aging</span>
+            <span class="template-desc">Youthful & radiant</span>
+          </button>
+          <button class="template-btn" data-template="hydration-boost" onclick="applyTemplate('hydration-boost')">
+            <i class="fa-solid fa-droplet"></i>
+            <span class="template-name">Hydration Boost</span>
+            <span class="template-desc">Deeply moisturized</span>
+          </button>
+          <button class="template-btn" data-template="minimalist" onclick="applyTemplate('minimalist')">
+            <i class="fa-solid fa-leaf"></i>
+            <span class="template-name">Minimalist</span>
+            <span class="template-desc">Simple 3-step routine</span>
+          </button>
+          <button class="template-btn" data-template="sensitive-skin" onclick="applyTemplate('sensitive-skin')">
+            <i class="fa-solid fa-heart-pulse"></i>
+            <span class="template-name">Sensitive Skin</span>
+            <span class="template-desc">Gentle & soothing</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recommended Products Banner -->
+      <div id="recommendedBanner" class="recommended-banner" style="display: none;">
+        <div class="recommended-header">
+          <i class="fa-solid fa-sparkles"></i>
+          <h3>Recommended For You</h3>
+          <span class="recommended-subtitle">Based on your skin profile</span>
+        </div>
+        <div id="recommendedProducts" class="recommended-products-list"></div>
+      </div>
+
       <!-- Products Grid -->
       <div id="productsContainer" class="products-grid"></div>
 
@@ -94,8 +137,35 @@
       <div class="selected-products">
         <h2>Selected Products</h2>
         <div id="selectedProductsList"></div>
+        
+        <!-- Cost Calculator Summary -->
+        <div id="costSummary" class="cost-summary" style="display: none;">
+          <div class="cost-header">
+            <i class="fa-solid fa-calculator"></i>
+            <h3>Routine Cost</h3>
+          </div>
+          <div class="cost-details">
+            <div class="cost-row">
+              <span>Total Cost:</span>
+              <span id="totalCost" class="cost-value">$0.00</span>
+            </div>
+            <div class="cost-row">
+              <span>Average per Product:</span>
+              <span id="avgCost" class="cost-value-secondary">$0.00</span>
+            </div>
+            <div class="cost-row">
+              <span>Estimated Monthly:</span>
+              <span id="monthlyCost" class="cost-value-secondary">$0.00</span>
+            </div>
+          </div>
+          <div id="budgetTip" class="budget-tip"></div>
+        </div>
+        
         <button id="generateRoutine" class="generate-btn">
           <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Routine
+        </button>
+        <button id="shoppingListBtn" class="shopping-list-btn" style="display: none;">
+          <i class="fa-solid fa-cart-shopping"></i> Create Shopping List
         </button>
       </div>
 
@@ -215,6 +285,25 @@
             <input type="text" id="shareLink" readonly />
             <button onclick="copyShareLink()"><i class="fa-solid fa-copy"></i> Copy</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shopping List Modal -->
+    <div id="shoppingListModal" class="modal shopping-list-modal" style="display: none;">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeShoppingList()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <h2><i class="fa-solid fa-cart-shopping"></i> Shopping List</h2>
+        <div id="shoppingListContent"></div>
+        <div class="shopping-list-actions">
+          <button onclick="printShoppingList()" class="print-btn">
+            <i class="fa-solid fa-print"></i> Print List
+          </button>
+          <button onclick="copyShoppingList()" class="copy-btn">
+            <i class="fa-solid fa-copy"></i> Copy to Clipboard
+          </button>
         </div>
       </div>
     </div>

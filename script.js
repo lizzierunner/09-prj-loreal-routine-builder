@@ -88,10 +88,21 @@ function displayProducts(products) {
     .map(
       (product) => `
     <div class="product-card" data-product-id="${product.id}">
+      <span class="category-badge category-${product.category}">${product.category}</span>
       <img src="${product.image}" alt="${product.name}">
       <div class="product-info">
         <h3>${product.name}</h3>
         <p>${product.brand}</p>
+        ${product.rating ? `
+        <div class="product-rating">
+          <span class="stars">
+            ${generateStars(product.rating)}
+          </span>
+          <span class="rating-number">${product.rating}</span>
+          ${product.reviewCount ? `<span class="review-count">(${product.reviewCount.toLocaleString()})</span>` : ''}
+          ${product.price ? `<span class="price">$${product.price}</span>` : ''}
+        </div>
+        ` : ''}
         <button class="info-btn" onclick="showProductDetails(${product.id})" aria-label="View details for ${product.name}">
           <i class="fa-solid fa-info-circle"></i> Details
         </button>
@@ -114,6 +125,32 @@ function displayProducts(products) {
 
   /* Re-apply selected state to cards that are already selected */
   updateProductCardStates();
+}
+
+/* Generate star rating display */
+function generateStars(rating) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  
+  let stars = '';
+  
+  // Full stars
+  for (let i = 0; i < fullStars; i++) {
+    stars += '<span class="star">★</span>';
+  }
+  
+  // Half star
+  if (hasHalfStar) {
+    stars += '<span class="star">★</span>';
+  }
+  
+  // Empty stars
+  for (let i = 0; i < emptyStars; i++) {
+    stars += '<span class="star" style="opacity: 0.3;">★</span>';
+  }
+  
+  return stars;
 }
 
 /* Toggle product selection when a card is clicked */
@@ -151,6 +188,8 @@ function displaySelectedProducts() {
     generateRoutineBtn.innerHTML = `
       <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Routine
     `;
+    /* Hide cost summary */
+    document.getElementById('costSummary').style.display = 'none';
     return;
   }
 
@@ -182,6 +221,68 @@ function displaySelectedProducts() {
   generateRoutineBtn.innerHTML = `
     <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Routine (${selectedProducts.length} product${selectedProducts.length > 1 ? 's' : ''})
   `;
+  
+  /* Calculate and display cost summary */
+  calculateRoutineCost();
+  
+  /* Show/hide shopping list button */
+  updateShoppingListButton();
+}
+
+/* Calculate and display routine cost */
+function calculateRoutineCost() {
+  const costSummary = document.getElementById('costSummary');
+  const totalCostEl = document.getElementById('totalCost');
+  const avgCostEl = document.getElementById('avgCost');
+  const monthlyCostEl = document.getElementById('monthlyCost');
+  const budgetTipEl = document.getElementById('budgetTip');
+  
+  /* Calculate total cost */
+  let totalCost = 0;
+  let productsWithPrice = 0;
+  
+  selectedProducts.forEach(product => {
+    if (product.price) {
+      totalCost += product.price;
+      productsWithPrice++;
+    }
+  });
+  
+  /* If no products have prices, hide the summary */
+  if (productsWithPrice === 0) {
+    costSummary.style.display = 'none';
+    return;
+  }
+  
+  /* Show cost summary */
+  costSummary.style.display = 'block';
+  
+  /* Calculate averages */
+  const avgCost = totalCost / productsWithPrice;
+  const monthlyCost = totalCost / 3; // Assume products last ~3 months
+  
+  /* Update display */
+  totalCostEl.textContent = `$${totalCost.toFixed(2)}`;
+  avgCostEl.textContent = `$${avgCost.toFixed(2)}`;
+  monthlyCostEl.textContent = `$${monthlyCost.toFixed(2)}`;
+  
+  /* Generate budget tip */
+  let tipHTML = '';
+  if (totalCost < 50) {
+    tipHTML = '<i class="fa-solid fa-piggy-bank"></i> Great budget-friendly routine! You\'re investing wisely in your skin.';
+    budgetTipEl.className = 'budget-tip';
+  } else if (totalCost < 100) {
+    tipHTML = '<i class="fa-solid fa-star"></i> Balanced routine with quality products at a reasonable price point.';
+    budgetTipEl.className = 'budget-tip';
+  } else if (totalCost < 150) {
+    tipHTML = '<i class="fa-solid fa-sparkles"></i> Premium routine! These products offer advanced formulations and results.';
+    budgetTipEl.className = 'budget-tip';
+  } else {
+    tipHTML = '<i class="fa-solid fa-crown"></i> Luxury routine! Consider checking for travel sizes to try products first.';
+    budgetTipEl.className = 'budget-tip warning';
+  }
+  
+  budgetTipEl.innerHTML = tipHTML;
 }
 
 /* Remove a product from the selected products list */
@@ -475,6 +576,16 @@ Format the response as a clear, numbered step-by-step routine I can follow daily
     removeLoading();
     addMessage(result.response, false, result.searchResults);
     console.log("Routine generated successfully!");
+    
+    /* Check if this is the user's first routine and celebrate! */
+    const isFirstRoutine = !localStorage.getItem('hasGeneratedRoutine');
+    if (isFirstRoutine) {
+      localStorage.setItem('hasGeneratedRoutine', 'true');
+      setTimeout(() => {
+        showConfetti();
+        addMessage("🎉 Congratulations on creating your first personalized routine! You're on your way to amazing skin!");
+      }, 500);
+    }
   } catch (error) {
     /* Handle errors (e.g., invalid API key, network issues) */
     removeLoading();
@@ -582,11 +693,23 @@ function showProductDetails(productId) {
             <h2>${product.name}</h2>
             <p class="modal-brand">${product.brand}</p>
             <span class="modal-category">${product.category}</span>
+            ${product.rating ? `
+            <div class="product-rating">
+              <span class="stars">${generateStars(product.rating)}</span>
+              <span class="rating-number">${product.rating}</span>
+              ${product.reviewCount ? `<span class="review-count">(${product.reviewCount.toLocaleString()} reviews)</span>` : ''}
+              ${product.price ? `<span class="price">$${product.price}</span>` : ''}
+            </div>
+            ` : ''}
           </div>
         </div>
         <div class="modal-body">
           <h3>Product Description</h3>
           <p>${product.description}</p>
+          ${product.ingredients ? `
+          <h3><i class="fa-solid fa-flask"></i> Key Ingredients</h3>
+          ${analyzeIngredients(product.ingredients)}
+          ` : ''}
         </div>
         <div class="modal-footer">
           <button class="modal-select-btn" onclick="selectProductFromModal(${product.id})">
@@ -1143,6 +1266,114 @@ function applyQuizRecommendations() {
   
   chatWindow.scrollTop = chatWindow.scrollHeight;
   closeSkinQuiz();
+  
+  /* Update recommendations based on quiz results */
+  updateRecommendations();
+}
+
+/* ========================================
+   ✨ SMART PRODUCT RECOMMENDATIONS
+   ======================================== */
+
+function updateRecommendations() {
+  const skinProfile = localStorage.getItem('skinProfile');
+  if (!skinProfile) {
+    document.getElementById('recommendedBanner').style.display = 'none';
+    return;
+  }
+  
+  const profile = JSON.parse(skinProfile);
+  const recommendedIds = getRecommendedProducts(profile);
+  
+  if (recommendedIds.length === 0) {
+    document.getElementById('recommendedBanner').style.display = 'none';
+    return;
+  }
+  
+  const recommended = allProducts.filter(p => recommendedIds.includes(p.id));
+  displayRecommendations(recommended, profile);
+}
+
+function getRecommendedProducts(profile) {
+  let recommendations = [];
+  
+  /* Skin type based recommendations */
+  if (profile.skinType === 'oily' || profile.skinType === 'combination') {
+    recommendations.push(1, 4, 6, 7); // Foaming cleanser, AM SPF, salicylic acid, niacinamide serum
+  } else if (profile.skinType === 'dry') {
+    recommendations.push(2, 3, 5, 8); // Hydrating cleanser, moisturizing cream, PM lotion, eye cream
+  } else if (profile.skinType === 'sensitive') {
+    recommendations.push(2, 3, 9); // Hydrating cleanser, moisturizing cream, healing ointment
+  }
+  
+  /* Concern based recommendations */
+  if (profile.concerns && profile.concerns.includes('acne')) {
+    recommendations.push(1, 6, 7); // Foaming cleanser, SA cleanser, niacinamide
+  }
+  
+  if (profile.concerns && profile.concerns.includes('aging')) {
+    recommendations.push(2, 3, 5, 8); // Anti-aging products
+  }
+  
+  if (profile.concerns && profile.concerns.includes('hydration')) {
+    recommendations.push(2, 3, 5, 8); // Hydrating products
+  }
+  
+  /* Remove duplicates and limit to 6 products */
+  return [...new Set(recommendations)].slice(0, 6);
+}
+
+function displayRecommendations(products, profile) {
+  const banner = document.getElementById('recommendedBanner');
+  const container = document.getElementById('recommendedProducts');
+  
+  if (products.length === 0) {
+    banner.style.display = 'none';
+    return;
+  }
+  
+  const profileText = `${profile.skinType || 'your'} skin${profile.concerns ? ' with ' + profile.concerns.join(', ') + ' concerns' : ''}`;
+  document.querySelector('.recommended-subtitle').textContent = `Perfect for ${profileText}`;
+  
+  container.innerHTML = products.map(product => `
+    <div class="recommended-product" onclick="quickAddProduct(${product.id})">
+      <img src="${product.image}" alt="${product.name}">
+      <div class="recommended-info">
+        <h4>${product.name}</h4>
+        <p>${product.brand}</p>
+        ${product.rating ? `
+          <div class="mini-rating">
+            <span class="stars-mini">${'★'.repeat(Math.floor(product.rating))}</span>
+            <span class="rating-num">${product.rating}</span>
+          </div>
+        ` : ''}
+      </div>
+      <button class="quick-add-btn" title="Add to routine">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+  `).join('');
+  
+  banner.style.display = 'block';
+}
+
+function quickAddProduct(productId) {
+  const product = allProducts.find(p => p.id === productId);
+  if (!product) return;
+  
+  /* Check if already selected */
+  const existingIndex = selectedProducts.findIndex(p => p.id === productId);
+  if (existingIndex === -1) {
+    selectedProducts.push(product);
+    displaySelectedProducts();
+    updateProductCardStates();
+    saveSelectedProductsToStorage();
+    
+    /* Show visual feedback */
+    addBotMessage(`✨ Added ${product.name} to your routine!`);
+  } else {
+    addBotMessage(`${product.name} is already in your routine.`);
+  }
 }
 
 /* Close skin quiz */
@@ -1454,6 +1685,365 @@ function loadSharedProducts() {
   }
 }
 
+/* ========================================
+   ⭐ INGREDIENT ANALYZER DATABASE
+   ======================================== */
+
+const ingredientDatabase = {
+  'Hyaluronic Acid': {
+    benefit: 'Deeply hydrates and plumps skin by holding 1000x its weight in water',
+    category: 'Hydrator',
+    color: '#4A90E2'
+  },
+  'Ceramides': {
+    benefit: 'Restores and strengthens skin barrier, locks in moisture',
+    category: 'Barrier Support',
+    color: '#7B68EE'
+  },
+  'Niacinamide': {
+    benefit: 'Reduces inflammation, minimizes pores, brightens skin tone',
+    category: 'Multi-Purpose',
+    color: '#50C878'
+  },
+  'Retinol': {
+    benefit: 'Boosts collagen, reduces fine lines, improves texture',
+    category: 'Anti-Aging',
+    color: '#FF6B6B',
+    warning: '⚠️ Use sunscreen! Avoid with AHA/BHA'
+  },
+  'Vitamin C': {
+    benefit: 'Brightens, fights free radicals, boosts collagen',
+    category: 'Antioxidant',
+    color: '#FFA500'
+  },
+  'Salicylic Acid': {
+    benefit: 'Exfoliates inside pores, fights acne, reduces blackheads',
+    category: 'BHA Exfoliant',
+    color: '#E74C3C',
+    warning: '⚠️ May increase sun sensitivity'
+  },
+  'Glycolic Acid': {
+    benefit: 'Exfoliates surface, brightens, smooths texture',
+    category: 'AHA Exfoliant',
+    color: '#E67E22',
+    warning: '⚠️ Avoid with retinol'
+  },
+  'Peptides': {
+    benefit: 'Stimulates collagen production, firms skin',
+    category: 'Anti-Aging',
+    color: '#9B59B6'
+  },
+  'SPF 30': {
+    benefit: 'Blocks 97% of UVB rays, prevents sun damage',
+    category: 'Sun Protection',
+    color: '#F39C12'
+  },
+  'Zinc Oxide': {
+    benefit: 'Physical UV blocker, soothes inflammation',
+    category: 'Sun Protection',
+    color: '#95A5A6'
+  },
+  'Glycerin': {
+    benefit: 'Humectant that attracts moisture to skin',
+    category: 'Hydrator',
+    color: '#3498DB'
+  },
+  'Petrolatum': {
+    benefit: 'Seals in moisture, protects skin barrier',
+    category: 'Occlusive',
+    color: '#34495E'
+  }
+};
+
+/* Analyze ingredients and generate HTML display */
+function analyzeIngredients(ingredients) {
+  if (!ingredients || ingredients.length === 0) {
+    return '<p class="no-ingredients">Ingredient information not available</p>';
+  }
+
+  let html = '<div class="ingredients-analysis">';
+  
+  ingredients.forEach(ingredient => {
+    const info = ingredientDatabase[ingredient];
+    if (info) {
+      html += `
+        <div class="ingredient-badge" style="border-left: 3px solid ${info.color}">
+          <div class="ingredient-name">${ingredient}</div>
+          <div class="ingredient-category">${info.category}</div>
+          <div class="ingredient-benefit">${info.benefit}</div>
+          ${info.warning ? `<div class="ingredient-warning">${info.warning}</div>` : ''}
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="ingredient-badge">
+          <div class="ingredient-name">${ingredient}</div>
+        </div>
+      `;
+    }
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+/* ========================================
+   ⚡ ROUTINE TEMPLATES
+   ======================================== */
+
+/* Predefined routine templates with product IDs */
+const routineTemplates = {
+  'acne-fighting': {
+    name: 'Acne-Fighting Routine',
+    products: [1, 6, 7, 4], // Foaming Cleanser, Retinol Serum, SA Cleanser, AM SPF
+    description: 'Combat acne with gentle yet effective products'
+  },
+  'anti-aging': {
+    name: 'Anti-Aging Routine',
+    products: [2, 6, 3, 5], // Hydrating Cleanser, Retinol Serum, Moisturizing Cream, PM Lotion
+    description: 'Fight signs of aging and promote youthful skin'
+  },
+  'hydration-boost': {
+    name: 'Hydration Boost Routine',
+    products: [2, 9, 3, 5], // Hydrating Cleanser, Hyaluronic Acid Serum, Moisturizing Cream, PM Lotion
+    description: 'Deep hydration for dry, thirsty skin'
+  },
+  'minimalist': {
+    name: 'Minimalist 3-Step Routine',
+    products: [1, 3, 4], // Cleanser, Moisturizer, SPF
+    description: 'Simple but effective everyday essentials'
+  },
+  'sensitive-skin': {
+    name: 'Sensitive Skin Routine',
+    products: [2, 11, 3], // Hydrating Cleanser, Micellar Water, Moisturizing Cream
+    description: 'Gentle, soothing products for sensitive skin'
+  }
+};
+
+/* Apply a routine template */
+function applyTemplate(templateKey) {
+  const template = routineTemplates[templateKey];
+  
+  if (!template) {
+    console.error('Template not found:', templateKey);
+    return;
+  }
+  
+  console.log(`Applying template: ${template.name}`);
+  
+  /* Clear current selection */
+  selectedProducts = [];
+  
+  /* Add template products to selection */
+  template.products.forEach(productId => {
+    const product = allProducts.find(p => p.id === productId);
+    if (product) {
+      selectedProducts.push(product);
+    }
+  });
+  
+  /* Update UI */
+  displaySelectedProducts();
+  updateProductCardStates();
+  saveSelectedProductsToStorage();
+  
+  /* Visual feedback - highlight applied template */
+  document.querySelectorAll('.template-btn').forEach(btn => {
+    btn.classList.remove('applied');
+  });
+  const appliedBtn = document.querySelector(`[data-template="${templateKey}"]`);
+  if (appliedBtn) {
+    appliedBtn.classList.add('applied');
+  }
+  
+  /* Scroll to selected products section */
+  document.querySelector('.selected-products').scrollIntoView({ 
+    behavior: 'smooth', 
+    block: 'center' 
+  });
+  
+  /* Show success message in chat */
+  addMessage(`✨ Applied "${template.name}"! I've selected ${selectedProducts.length} products for you. Click "Generate Routine" to get started, or feel free to adjust the selection.`);
+  
+  /* Optional: Show confetti animation */
+  setTimeout(() => {
+    showConfetti();
+  }, 300);
+  
+  console.log(`Template applied: ${selectedProducts.length} products selected`);
+}
+
+/* ========================================
+   🎉 CONFETTI ANIMATION
+   ======================================== */
+
+/* Create confetti animation for celebrations */
+function showConfetti() {
+  const colors = ['#E30613', '#D4AF37', '#B76E79', '#FF6B6B', '#4ECDC4'];
+  const confettiCount = 50;
+  
+  for (let i = 0; i < confettiCount; i++) {
+    createConfettiPiece(colors[Math.floor(Math.random() * colors.length)]);
+  }
+}
+
+function createConfettiPiece(color) {
+  const confetti = document.createElement('div');
+  confetti.style.position = 'fixed';
+  confetti.style.width = '10px';
+  confetti.style.height = '10px';
+  confetti.style.backgroundColor = color;
+  confetti.style.left = Math.random() * 100 + '%';
+  confetti.style.top = '-10px';
+  confetti.style.opacity = '1';
+  confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+  confetti.style.zIndex = '10000';
+  confetti.style.pointerEvents = 'none';
+  confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+  
+  document.body.appendChild(confetti);
+  
+  const duration = 2000 + Math.random() * 1000;
+  const endLeft = parseFloat(confetti.style.left) + (Math.random() * 40 - 20);
+  
+  confetti.animate([
+    { 
+      transform: `translateY(0) rotate(0deg)`,
+      opacity: 1
+    },
+    { 
+      transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`,
+      opacity: 0,
+      left: endLeft + '%'
+    }
+  ], {
+    duration: duration,
+    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+  });
+  
+  setTimeout(() => {
+    confetti.remove();
+  }, duration);
+}
+
+/* ========================================
+   🛒 SHOPPING LIST GENERATOR
+   ======================================== */
+
+/* Show shopping list button when products are selected */
+function updateShoppingListButton() {
+  const shoppingListBtn = document.getElementById('shoppingListBtn');
+  if (selectedProducts.length > 0) {
+    shoppingListBtn.style.display = 'block';
+  } else {
+    shoppingListBtn.style.display = 'none';
+  }
+}
+
+/* Generate and display shopping list */
+function generateShoppingList() {
+  const modal = document.getElementById('shoppingListModal');
+  const content = document.getElementById('shoppingListContent');
+  
+  if (selectedProducts.length === 0) {
+    content.innerHTML = '<p class="empty-message">No products selected yet!</p>';
+    modal.style.display = 'flex';
+    return;
+  }
+  
+  let totalCost = 0;
+  let listHTML = '<div class="shopping-list-items">';
+  
+  selectedProducts.forEach((product, index) => {
+    const price = product.price || 0;
+    totalCost += price;
+    
+    listHTML += `
+      <div class="shopping-item">
+        <input type="checkbox" id="item-${index}" class="shopping-checkbox">
+        <label for="item-${index}">
+          <div class="item-details">
+            <span class="item-number">${index + 1}.</span>
+            <div class="item-info">
+              <strong>${product.name}</strong>
+              <span class="item-brand">${product.brand}</span>
+              <span class="item-category">${product.category}</span>
+            </div>
+            ${price > 0 ? `<span class="item-price">$${price.toFixed(2)}</span>` : ''}
+          </div>
+        </label>
+      </div>
+    `;
+  });
+  
+  listHTML += '</div>';
+  
+  if (totalCost > 0) {
+    listHTML += `
+      <div class="shopping-total">
+        <strong>Total Estimated Cost:</strong>
+        <span class="total-price">$${totalCost.toFixed(2)}</span>
+      </div>
+    `;
+  }
+  
+  listHTML += `
+    <div class="shopping-tip">
+      <i class="fa-solid fa-lightbulb"></i>
+      <strong>Shopping Tips:</strong>
+      <ul>
+        <li>Check for sales at Ulta, Sephora, or Target</li>
+        <li>Consider travel sizes to test products first</li>
+        <li>Look for bundle deals to save money</li>
+        <li>Sign up for rewards programs for extra savings</li>
+      </ul>
+    </div>
+  `;
+  
+  content.innerHTML = listHTML;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+/* Close shopping list modal */
+function closeShoppingList() {
+  const modal = document.getElementById('shoppingListModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+/* Print shopping list */
+function printShoppingList() {
+  window.print();
+}
+
+/* Copy shopping list to clipboard */
+async function copyShoppingList() {
+  let text = '🛍️ MY SKINCARE SHOPPING LIST\n\n';
+  
+  selectedProducts.forEach((product, index) => {
+    text += `${index + 1}. ${product.name}\n`;
+    text += `   Brand: ${product.brand}\n`;
+    text += `   Category: ${product.category}\n`;
+    if (product.price) {
+      text += `   Price: $${product.price.toFixed(2)}\n`;
+    }
+    text += '\n';
+  });
+  
+  const totalCost = selectedProducts.reduce((sum, p) => sum + (p.price || 0), 0);
+  if (totalCost > 0) {
+    text += `\n💰 Total: $${totalCost.toFixed(2)}`;
+  }
+  
+  try {
+    await navigator.clipboard.writeText(text);
+    alert('Shopping list copied to clipboard! ✅');
+  } catch (err) {
+    console.error('Failed to copy:', err);
+  }
+}
+
 /* Initialize the app when page loads */
 async function initializeApp() {
   allProducts = await loadProducts();
@@ -1467,10 +2057,17 @@ async function initializeApp() {
   setTimeout(() => {
     updateFavoriteButtons();
     updateCompareCheckboxes();
+    updateRecommendations(); // Show personalized recommendations
   }, 100);
   
   /* Load shared products if URL parameter exists */
   setTimeout(loadSharedProducts, 500);
+  
+  /* Add shopping list button event listener */
+  const shoppingListBtn = document.getElementById('shoppingListBtn');
+  if (shoppingListBtn) {
+    shoppingListBtn.addEventListener('click', generateShoppingList);
+  }
 }
 
 initializeApp();
