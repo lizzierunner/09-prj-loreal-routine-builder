@@ -3307,3 +3307,179 @@ button,
     height: 150px;
   }
 }
+
+/* ========================================
+   🎭 AI PERSONALITY SELECTOR
+   ======================================== */
+
+#personalityBtn {
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+#personalityBtn:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+#personalityModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.personality-content {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.personality-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.personality-header h2 {
+  font-size: 28px;
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.personality-header p {
+  color: #666;
+  margin-top: 10px;
+}
+
+.personality-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.personality-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 3px solid transparent;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.personality-card:hover {
+  transform: translateY(-5px);
+  border-color: #ec4899;
+  box-shadow: 0 10px 30px rgba(236, 72, 153, 0.2);
+}
+
+.personality-card.active {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+  border-color: #ec4899;
+  box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+}
+
+.personality-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.personality-card h3 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.personality-card p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.personality-traits {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0 0;
+}
+
+.personality-traits li {
+  color: #777;
+  font-size: 13px;
+  padding: 5px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.personality-traits li:first-child {
+  border-top: none;
+}
+
+body.dark-mode .personality-content {
+  background: #1a1a1a;
+}
+
+body.dark-mode .personality-header h2 {
+  -webkit-text-fill-color: transparent;
+}
+
+body.dark-mode .personality-header p {
+  color: #999;
+}
+
+body.dark-mode .personality-card {
+  background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
+}
+
+body.dark-mode .personality-card h3 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .personality-card p {
+  color: #999;
+}
+
+body.dark-mode .personality-traits li {
+  color: #888;
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .personality-card.active {
+  background: linear-gradient(135deg, #3a1a2a 0%, #4a1a3a 100%);
+}
+
+@media (max-width: 768px) {
+  .personality-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .personality-content {
+    padding: 20px;
+  }
+}

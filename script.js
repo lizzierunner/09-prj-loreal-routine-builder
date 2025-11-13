@@ -461,8 +461,8 @@ function removeLoading() {
 
 /* Send a message to OpenAI via Cloudflare Worker (secure - no API key exposed) */
 async function sendToOpenAI(userMessage, includeProducts = false, enableWebSearch = false) {
-  /* Build the system message with product context if needed */
-  let systemMessage = `You are a helpful L'Oréal beauty advisor. You help customers understand products, answer questions about skincare and beauty, and provide personalized recommendations. You remember the conversation context and can answer follow-up questions naturally.`;
+  /* Build the system message with personality and product context if needed */
+  let systemMessage = getPersonalityPrompt() + ` You help customers understand L'Oréal products, answer questions about skincare and beauty, and provide personalized recommendations. You remember the conversation context and can answer follow-up questions naturally.`;
 
   if (includeProducts && selectedProducts.length > 0) {
     /* Add detailed product information to the system message
@@ -2259,3 +2259,81 @@ async function initializeApp() {
 
 initializeApp();
 
+
+/* ========================================
+   🎭 AI PERSONALITY SELECTOR
+   ======================================== */
+
+const aiPersonalities = {
+  dermatologist: {
+    name: 'Dr. Expert',
+    systemPrompt: `You are a professional dermatologist with years of clinical experience. Provide evidence-based skincare advice using medical terminology when appropriate. Be thorough, detailed, and reference scientific principles.`,
+    greeting: 'Hello! I\'m Dr. Expert, your professional dermatology consultant.'
+  },
+  friendly: {
+    name: 'Friendly Guide',
+    systemPrompt: `You are an enthusiastic and warm beauty advisor who loves helping people discover their perfect skincare routine. Use friendly, conversational language with plenty of encouragement. Make skincare feel fun and accessible.`,
+    greeting: 'Hey there, skincare friend! ✨ I\'m so excited to help you build your perfect routine!'
+  },
+  minimalist: {
+    name: 'Minimalist Pro',
+    systemPrompt: `You are a no-nonsense skincare expert who values efficiency and simplicity. Provide concise, direct answers without unnecessary details. Focus on essential information only.`,
+    greeting: 'Hi. Ready to build your routine? Let\'s get straight to it.'
+  }
+};
+
+let currentPersonality = 'friendly';
+
+function loadPersonality() {
+  const saved = localStorage.getItem('aiPersonality');
+  if (saved && aiPersonalities[saved]) {
+    currentPersonality = saved;
+  }
+  updatePersonalityButton();
+}
+
+function updatePersonalityButton() {
+  const btn = document.getElementById('personalityBtn');
+  if (btn) {
+    const icons = { dermatologist: 'fa-user-doctor', friendly: 'fa-face-smile', minimalist: 'fa-bolt' };
+    btn.innerHTML = `<i class="fa-solid ${icons[currentPersonality] || 'fa-user-doctor'}"></i>`;
+    btn.title = `Current: ${aiPersonalities[currentPersonality].name}`;
+  }
+}
+
+function showPersonalitySelector() {
+  const modal = document.getElementById('personalityModal');
+  document.querySelectorAll('.personality-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.personality === currentPersonality);
+  });
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function selectPersonality(personality) {
+  if (!aiPersonalities[personality]) return;
+  currentPersonality = personality;
+  localStorage.setItem('aiPersonality', personality);
+  document.querySelectorAll('.personality-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.personality === personality);
+  });
+  updatePersonalityButton();
+  addBotMessage(`✨ Personality changed to ${aiPersonalities[personality].name}! ${aiPersonalities[personality].greeting}`);
+  setTimeout(() => closePersonality(), 500);
+}
+
+function closePersonality() {
+  document.getElementById('personalityModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+function getPersonalityPrompt() {
+  return aiPersonalities[currentPersonality].systemPrompt;
+}
+
+/* Add personality button listener on init */
+const personalityBtn = document.getElementById('personalityBtn');
+if (personalityBtn) {
+  personalityBtn.addEventListener('click', showPersonalitySelector);
+  loadPersonality();
+}

@@ -178,6 +178,9 @@
         <div class="chat-header">
           <h2>Let's Build Your Routine</h2>
           <div class="chat-header-actions">
+            <button id="personalityBtn" class="personality-btn" title="Choose AI Personality">
+              <i class="fa-solid fa-user-doctor"></i>
+            </button>
             <button id="voiceInputBtn" class="voice-input-btn" title="Voice input">
               <i class="fa-solid fa-microphone"></i>
             </button>
@@ -351,6 +354,49 @@
           <div class="milestones">
             <h3>Milestones</h3>
             <div id="milestonesList" class="milestones-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Personality Selector Modal -->
+    <div id="personalityModal" class="modal personality-modal" style="display: none;">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closePersonality()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <h2><i class="fa-solid fa-masks-theater"></i> Choose Your AI Assistant</h2>
+        <p class="personality-subtitle">Select the personality that best fits your style</p>
+        <div class="personality-grid">
+          <div class="personality-card" data-personality="dermatologist" onclick="selectPersonality('dermatologist')">
+            <div class="personality-icon">👨‍⚕️</div>
+            <h3>Dr. Expert</h3>
+            <p class="personality-desc">Professional dermatologist with clinical expertise</p>
+            <ul class="personality-traits">
+              <li>✓ Medical terminology</li>
+              <li>✓ Evidence-based advice</li>
+              <li>✓ Detailed explanations</li>
+            </ul>
+          </div>
+          <div class="personality-card active" data-personality="friendly" onclick="selectPersonality('friendly')">
+            <div class="personality-icon">🌟</div>
+            <h3>Friendly Guide</h3>
+            <p class="personality-desc">Warm beauty advisor who makes skincare fun</p>
+            <ul class="personality-traits">
+              <li>✓ Conversational tone</li>
+              <li>✓ Encouraging support</li>
+              <li>✓ Easy to understand</li>
+            </ul>
+          </div>
+          <div class="personality-card" data-personality="minimalist" onclick="selectPersonality('minimalist')">
+            <div class="personality-icon">🎯</div>
+            <h3>Minimalist Pro</h3>
+            <p class="personality-desc">Straight to the point, no fluff</p>
+            <ul class="personality-traits">
+              <li>✓ Concise answers</li>
+              <li>✓ Essential info only</li>
+              <li>✓ Quick & efficient</li>
+            </ul>
           </div>
         </div>
       </div>
