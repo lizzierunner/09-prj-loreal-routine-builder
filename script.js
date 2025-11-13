@@ -193,12 +193,13 @@ function displaySelectedProducts() {
     return;
   }
 
-  /* Create chips for each selected product */
+  /* Create chips for each selected product with drag & drop support */
   const chipsHTML = selectedProducts
     .map(
-      (product) => `
-    <div class="selected-product-chip">
-      <span>${product.name}</span>
+      (product, index) => `
+    <div class="selected-product-chip" draggable="true" data-product-id="${product.id}" data-index="${index}">
+      <span class="drag-handle" title="Drag to reorder"><i class="fa-solid fa-grip-vertical"></i></span>
+      <span class="product-name">${product.name}</span>
       <button onclick="removeProduct(${product.id})" aria-label="Remove ${product.name}">
         ×
       </button>
@@ -2337,3 +2338,97 @@ if (personalityBtn) {
   personalityBtn.addEventListener('click', showPersonalitySelector);
   loadPersonality();
 }
+
+/* ========================================
+   🔄 DRAG & DROP REORDER
+   ======================================== */
+
+let draggedElement = null;
+let draggedIndex = null;
+
+/* Initialize drag & drop listeners after products are displayed */
+function initializeDragAndDrop() {
+  const chips = document.querySelectorAll('.selected-product-chip');
+  
+  chips.forEach((chip, index) => {
+    /* Drag start - store the element being dragged */
+    chip.addEventListener('dragstart', (e) => {
+      draggedElement = chip;
+      draggedIndex = index;
+      chip.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', chip.innerHTML);
+    });
+
+    /* Drag end - clean up */
+    chip.addEventListener('dragend', (e) => {
+      chip.classList.remove('dragging');
+      document.querySelectorAll('.selected-product-chip').forEach(c => {
+        c.classList.remove('drag-over');
+      });
+    });
+
+    /* Drag over - allow dropping */
+    chip.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      
+      if (draggedElement !== chip) {
+        chip.classList.add('drag-over');
+      }
+    });
+
+    /* Drag leave - remove hover effect */
+    chip.addEventListener('dragleave', (e) => {
+      chip.classList.remove('drag-over');
+    });
+
+    /* Drop - reorder the products array */
+    chip.addEventListener('drop', (e) => {
+      e.preventDefault();
+      chip.classList.remove('drag-over');
+      
+      if (draggedElement !== chip) {
+        const dropIndex = parseInt(chip.dataset.index);
+        
+        /* Reorder the selectedProducts array */
+        const [movedProduct] = selectedProducts.splice(draggedIndex, 1);
+        selectedProducts.splice(dropIndex, 0, movedProduct);
+        
+        /* Save to localStorage */
+        localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
+        
+        /* Re-render the products */
+        displaySelectedProducts();
+        
+        /* Show success feedback */
+        showReorderFeedback();
+      }
+    });
+  });
+}
+
+/* Show visual feedback after reordering */
+function showReorderFeedback() {
+  const feedback = document.createElement('div');
+  feedback.className = 'reorder-feedback';
+  feedback.innerHTML = '<i class="fa-solid fa-check"></i> Order updated!';
+  document.body.appendChild(feedback);
+  
+  setTimeout(() => {
+    feedback.classList.add('show');
+  }, 10);
+  
+  setTimeout(() => {
+    feedback.classList.remove('show');
+    setTimeout(() => feedback.remove(), 300);
+  }, 2000);
+}
+
+/* Override displaySelectedProducts to initialize drag & drop */
+const originalDisplaySelectedProducts = displaySelectedProducts;
+displaySelectedProducts = function() {
+  originalDisplaySelectedProducts();
+  /* Initialize drag & drop after rendering */
+  setTimeout(() => initializeDragAndDrop(), 0);
+};
