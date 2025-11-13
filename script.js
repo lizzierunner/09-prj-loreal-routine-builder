@@ -2722,3 +2722,136 @@ function analyzeExpectedResults(products) {
   
   return results;
 }
+
+/* ========================================
+   📸 SHAREABLE INSTAGRAM CARDS
+   ======================================== */
+
+/* Show/hide share card button */
+function updateShareCardButton() {
+  const shareCardBtn = document.getElementById('shareCardBtn');
+  if (selectedProducts.length > 0) {
+    shareCardBtn.style.display = 'inline-flex';
+  } else {
+    shareCardBtn.style.display = 'none';
+  }
+}
+
+/* Generate and download Instagram share card */
+async function generateShareCard() {
+  if (selectedProducts.length === 0) {
+    addBotMessage("❌ Please select products first to create a share card!");
+    return;
+  }
+
+  /* Show generating message */
+  addBotMessage("📸 Generating your Instagram-ready share card...");
+
+  try {
+    /* Populate the hidden template with products */
+    const shareCardProducts = document.getElementById('shareCardProducts');
+    const shareDate = document.getElementById('shareDate');
+    
+    /* Set current date */
+    const today = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    shareDate.textContent = today;
+
+    /* Create product list HTML */
+    const productsHTML = selectedProducts.map((product, index) => `
+      <div class="share-product-item">
+        <div class="share-product-number">${index + 1}</div>
+        <div class="share-product-details">
+          <div class="share-product-name">${product.name}</div>
+          <div class="share-product-brand">${product.brand}</div>
+          ${product.category ? `<div class="share-product-category">${getCategoryIcon(product.category)} ${product.category}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    shareCardProducts.innerHTML = productsHTML;
+
+    /* Make template visible temporarily for capture */
+    const template = document.getElementById('shareCardTemplate');
+    template.style.display = 'block';
+    template.style.position = 'fixed';
+    template.style.left = '-9999px';
+    template.style.top = '0';
+
+    /* Wait for images to load */
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    /* Capture the card using html2canvas */
+    const canvas = await html2canvas(template, {
+      backgroundColor: '#ffffff',
+      scale: 2, // Higher quality
+      logging: false,
+      windowWidth: 1080,
+      windowHeight: 1920
+    });
+
+    /* Hide template again */
+    template.style.display = 'none';
+
+    /* Convert canvas to blob and download */
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `loreal-routine-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      /* Success message */
+      addBotMessage("✅ Your routine card has been downloaded! Share it on Instagram! 📱✨");
+      
+      /* Show celebration confetti */
+      setTimeout(() => showConfetti(), 300);
+    });
+
+  } catch (error) {
+    console.error('Error generating share card:', error);
+    addBotMessage("❌ Sorry, there was an error generating your share card. Please try again.");
+  }
+}
+
+/* Get category icon for share card */
+function getCategoryIcon(category) {
+  const icons = {
+    'cleanser': '🧼',
+    'moisturizer': '💧',
+    'serum': '✨',
+    'sunscreen': '☀️',
+    'mask': '🎭',
+    'toner': '🌸',
+    'eye cream': '👁️',
+    'treatment': '💊',
+    'exfoliant': '🔄',
+    'haircare': '💇',
+    'makeup': '💄',
+    'hair color': '🎨',
+    'hair styling': '✂️',
+    "men's grooming": '🧔',
+    'suncare': '🌞',
+    'fragrance': '🌺'
+  };
+  return icons[category.toLowerCase()] || '✨';
+}
+
+/* Add share card button event listener */
+const shareCardBtn = document.getElementById('shareCardBtn');
+if (shareCardBtn) {
+  shareCardBtn.addEventListener('click', generateShareCard);
+}
+
+/* Update share button visibility when products change */
+const originalDisplaySelectedProducts2 = displaySelectedProducts;
+displaySelectedProducts = function() {
+  originalDisplaySelectedProducts2();
+  updateShareCardButton();
+};

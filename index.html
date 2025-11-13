@@ -177,6 +177,9 @@
         <button id="shoppingListBtn" class="shopping-list-btn" style="display: none;">
           <i class="fa-solid fa-cart-shopping"></i> Create Shopping List
         </button>
+        <button id="shareCardBtn" class="share-card-btn" style="display: none;">
+          <i class="fa-brands fa-instagram"></i> Share on Instagram
+        </button>
       </div>
 
       <!------- Chat Area ------->
@@ -417,7 +420,26 @@
       </div>
     </div>
 
+    <!-- Hidden Share Card Template for Instagram -->
+    <div id="shareCardTemplate" class="share-card-template">
+      <div class="share-card-inner">
+        <div class="share-card-header">
+          <img src="img/loreal-logo.png" alt="L'Oréal" class="share-logo">
+          <h2 class="share-title">My Skincare Routine</h2>
+        </div>
+        <div id="shareCardProducts" class="share-card-products"></div>
+        <div class="share-card-footer">
+          <p class="share-tagline">✨ Powered by L'Oréal AI Routine Builder</p>
+          <p class="share-date" id="shareDate"></p>
+        </div>
+      </div>
+    </div>
+
     <!-- No secrets.js needed! API key is secure in Cloudflare Worker -->
+    
+    <!-- HTML2Canvas for Instagram Share Cards -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <script src="script.js"></script>
   </body>
 </html>

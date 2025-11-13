@@ -3922,3 +3922,171 @@ body.dark-mode .product-tag {
     padding: 5px 10px;
   }
 }
+
+/* ========================================
+   📸 SHAREABLE INSTAGRAM CARDS
+   ======================================== */
+
+.share-card-btn {
+  background: linear-gradient(135deg, #e4405f 0%, #c13584 50%, #833ab4 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(228, 64, 95, 0.3);
+  margin-top: 15px;
+}
+
+.share-card-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(228, 64, 95, 0.4);
+}
+
+.share-card-btn:active {
+  transform: translateY(-1px);
+}
+
+.share-card-btn i {
+  font-size: 20px;
+}
+
+/* Hidden template for share card generation */
+.share-card-template {
+  display: none;
+  width: 1080px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.share-card-inner {
+  background: white;
+  border-radius: 30px;
+  padding: 50px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.share-card-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 3px solid #f0f0f0;
+}
+
+.share-logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.share-title {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.share-card-products {
+  display: grid;
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.share-product-item {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 25px;
+  border-radius: 20px;
+  border-left: 6px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.share-product-number {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.share-product-details {
+  flex: 1;
+}
+
+.share-product-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.share-product-brand {
+  font-size: 22px;
+  color: #667eea;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.share-product-category {
+  font-size: 18px;
+  color: #666;
+  display: inline-block;
+  background: white;
+  padding: 6px 15px;
+  border-radius: 15px;
+  margin-top: 8px;
+}
+
+.share-card-footer {
+  text-align: center;
+  padding-top: 30px;
+  border-top: 3px solid #f0f0f0;
+}
+
+.share-tagline {
+  font-size: 24px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 15px 0;
+}
+
+.share-date {
+  font-size: 20px;
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+body.dark-mode .share-card-btn {
+  box-shadow: 0 4px 15px rgba(228, 64, 95, 0.5);
+}
+
+@media (max-width: 768px) {
+  .share-card-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 15px 24px;
+  }
+}
