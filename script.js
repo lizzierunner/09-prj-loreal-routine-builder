@@ -577,6 +577,9 @@ Format the response as a clear, numbered step-by-step routine I can follow daily
     addMessage(result.response, false, result.searchResults);
     console.log("Routine generated successfully!");
     
+    /* Track analytics */
+    trackRoutineGeneration();
+    
     /* Check if this is the user's first routine and celebrate! */
     const isFirstRoutine = !localStorage.getItem('hasGeneratedRoutine');
     if (isFirstRoutine) {
@@ -1927,7 +1930,185 @@ function createConfettiPiece(color) {
 }
 
 /* ========================================
-   🛒 SHOPPING LIST GENERATOR
+   � ANALYTICS DASHBOARD
+   ======================================== */
+
+/* Track routine generation */
+function trackRoutineGeneration() {
+  const analytics = JSON.parse(localStorage.getItem('analytics') || '{"routines": [], "products": [], "streaks": {}}');
+  
+  const today = new Date().toDateString();
+  
+  /* Add today's routine */
+  if (!analytics.routines.includes(today)) {
+    analytics.routines.push(today);
+  }
+  
+  /* Track unique products */
+  selectedProducts.forEach(product => {
+    if (!analytics.products.includes(product.id)) {
+      analytics.products.push(product.id);
+    }
+  });
+  
+  /* Calculate streak */
+  analytics.streaks = calculateStreak(analytics.routines);
+  
+  localStorage.setItem('analytics', JSON.stringify(analytics));
+  
+  /* Check for milestones */
+  checkMilestones(analytics);
+}
+
+/* Calculate current streak */
+function calculateStreak(routines) {
+  if (routines.length === 0) return { current: 0, longest: 0 };
+  
+  const dates = routines.map(d => new Date(d)).sort((a, b) => b - a);
+  let currentStreak = 1;
+  let longestStreak = 1;
+  let tempStreak = 1;
+  
+  for (let i = 0; i < dates.length - 1; i++) {
+    const diffDays = Math.floor((dates[i] - dates[i + 1]) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) {
+      tempStreak++;
+      if (i === 0) currentStreak++;
+    } else {
+      if (tempStreak > longestStreak) longestStreak = tempStreak;
+      tempStreak = 1;
+    }
+  }
+  
+  if (tempStreak > longestStreak) longestStreak = tempStreak;
+  
+  return { current: currentStreak, longest: longestStreak };
+}
+
+/* Check and award milestones */
+function checkMilestones(analytics) {
+  const milestones = JSON.parse(localStorage.getItem('milestones') || '[]');
+  
+  /* First routine */
+  if (analytics.routines.length === 1 && !milestones.includes('first-routine')) {
+    milestones.push('first-routine');
+    showMilestoneNotification('🎉 First Routine!', 'You created your first skincare routine!');
+  }
+  
+  /* 7-day streak */
+  if (analytics.streaks.current >= 7 && !milestones.includes('7-day-streak')) {
+    milestones.push('7-day-streak');
+    showMilestoneNotification('🔥 7-Day Streak!', 'You\'re on fire! Keep up the consistency!');
+  }
+  
+  /* 30-day streak */
+  if (analytics.streaks.current >= 30 && !milestones.includes('30-day-streak')) {
+    milestones.push('30-day-streak');
+    showMilestoneNotification('🏆 30-Day Streak!', 'Amazing dedication to your skincare!');
+  }
+  
+  /* Product explorer */
+  if (analytics.products.length >= 10 && !milestones.includes('product-explorer')) {
+    milestones.push('product-explorer');
+    showMilestoneNotification('⭐ Product Explorer!', 'You\'ve tried 10+ different products!');
+  }
+  
+  localStorage.setItem('milestones', JSON.stringify(milestones));
+}
+
+/* Show milestone notification */
+function showMilestoneNotification(title, message) {
+  addBotMessage(`${title}\n${message}`);
+  showConfetti();
+}
+
+/* Show analytics dashboard */
+function showAnalytics() {
+  const modal = document.getElementById('analyticsModal');
+  const analytics = JSON.parse(localStorage.getItem('analytics') || '{"routines": [], "products": [], "streaks": {}}');
+  const milestones = JSON.parse(localStorage.getItem('milestones') || '[]');
+  
+  /* Update stats */
+  document.getElementById('totalRoutines').textContent = analytics.routines.length;
+  document.getElementById('currentStreak').textContent = analytics.streaks.current || 0;
+  document.getElementById('totalProducts').textContent = analytics.products.length;
+  document.getElementById('achievementCount').textContent = milestones.length;
+  
+  /* Generate weekly chart */
+  generateWeeklyChart(analytics.routines);
+  
+  /* Display milestones */
+  displayMilestones(milestones);
+  
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+/* Generate weekly activity chart */
+function generateWeeklyChart(routines) {
+  const chart = document.getElementById('weeklyChart');
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const today = new Date();
+  const weekActivity = new Array(7).fill(0);
+  
+  /* Count routines for each day of the week */
+  routines.forEach(dateStr => {
+    const date = new Date(dateStr);
+    const daysDiff = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+    if (daysDiff < 7) {
+      const dayIndex = date.getDay();
+      weekActivity[dayIndex]++;
+    }
+  });
+  
+  const maxActivity = Math.max(...weekActivity, 1);
+  
+  chart.innerHTML = days.map((day, i) => `
+    <div class="chart-day">
+      <div class="chart-bar-container">
+        <div class="chart-bar" style="height: ${(weekActivity[i] / maxActivity) * 100}%">
+          <span class="chart-value">${weekActivity[i]}</span>
+        </div>
+      </div>
+      <div class="chart-label">${day}</div>
+    </div>
+  `).join('');
+}
+
+/* Display earned milestones */
+function displayMilestones(milestones) {
+  const container = document.getElementById('milestonesList');
+  
+  const allMilestones = [
+    { id: 'first-routine', icon: '🎉', title: 'First Routine', desc: 'Created your first routine' },
+    { id: '7-day-streak', icon: '🔥', title: '7-Day Streak', desc: 'Consistency champion' },
+    { id: '30-day-streak', icon: '🏆', title: '30-Day Streak', desc: 'Skincare master' },
+    { id: 'product-explorer', icon: '⭐', title: 'Product Explorer', desc: 'Tried 10+ products' },
+    { id: 'quiz-taker', icon: '📋', title: 'Know Thyself', desc: 'Completed skin quiz' },
+  ];
+  
+  container.innerHTML = allMilestones.map(m => `
+    <div class="milestone-item ${milestones.includes(m.id) ? 'earned' : 'locked'}">
+      <div class="milestone-icon">${m.icon}</div>
+      <div class="milestone-info">
+        <h4>${m.title}</h4>
+        <p>${m.desc}</p>
+      </div>
+      ${milestones.includes(m.id) ? '<i class="fa-solid fa-check milestone-check"></i>' : '<i class="fa-solid fa-lock milestone-lock"></i>'}
+    </div>
+  `).join('');
+}
+
+/* Close analytics modal */
+function closeAnalytics() {
+  const modal = document.getElementById('analyticsModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+/* ========================================
+   �🛒 SHOPPING LIST GENERATOR
    ======================================== */
 
 /* Show shopping list button when products are selected */
@@ -2067,6 +2248,12 @@ async function initializeApp() {
   const shoppingListBtn = document.getElementById('shoppingListBtn');
   if (shoppingListBtn) {
     shoppingListBtn.addEventListener('click', generateShoppingList);
+  }
+  
+  /* Add analytics button event listener */
+  const analyticsBtn = document.getElementById('analyticsBtn');
+  if (analyticsBtn) {
+    analyticsBtn.addEventListener('click', showAnalytics);
   }
 }
 

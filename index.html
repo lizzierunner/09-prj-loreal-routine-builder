@@ -48,6 +48,10 @@
             <i class="fa-solid fa-code-compare"></i>
             <span>Compare</span>
           </button>
+          <button id="analyticsBtn" class="header-action-btn" title="View Analytics">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>My Stats</span>
+          </button>
         </div>
       </header>
 
@@ -304,6 +308,50 @@
           <button onclick="copyShoppingList()" class="copy-btn">
             <i class="fa-solid fa-copy"></i> Copy to Clipboard
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics Dashboard Modal -->
+    <div id="analyticsModal" class="modal analytics-modal" style="display: none;">
+      <div class="modal-content analytics-content">
+        <button class="modal-close" onclick="closeAnalytics()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <h2><i class="fa-solid fa-chart-line"></i> Your Skincare Journey</h2>
+        <div id="analyticsContent">
+          <div class="analytics-grid">
+            <div class="stat-card">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-value" id="totalRoutines">0</div>
+              <div class="stat-label">Routines Generated</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-value" id="currentStreak">0</div>
+              <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-value" id="totalProducts">0</div>
+              <div class="stat-label">Products Tried</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🏆</div>
+              <div class="stat-value" id="achievementCount">0</div>
+              <div class="stat-label">Achievements</div>
+            </div>
+          </div>
+          
+          <div class="usage-timeline">
+            <h3>Weekly Activity</h3>
+            <div id="weeklyChart" class="weekly-chart"></div>
+          </div>
+          
+          <div class="milestones">
+            <h3>Milestones</h3>
+            <div id="milestonesList" class="milestones-list"></div>
+          </div>
         </div>
       </div>
     </div>
