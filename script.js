@@ -2855,3 +2855,285 @@ displaySelectedProducts = function() {
   originalDisplaySelectedProducts2();
   updateShareCardButton();
 };
+
+/* ========================================
+   🏆 ACHIEVEMENT SYSTEM ENHANCEMENT
+   ======================================== */
+
+/* Complete achievement definitions */
+const achievements = [
+  {
+    id: 'first_routine',
+    name: 'First Steps',
+    description: 'Generated your first routine',
+    icon: '🎯',
+    category: 'Getting Started',
+    requirement: 'Generate 1 routine'
+  },
+  {
+    id: 'routine_master',
+    name: 'Routine Master',
+    description: 'Generated 5 routines',
+    icon: '👑',
+    category: 'Expert',
+    requirement: 'Generate 5 routines'
+  },
+  {
+    id: 'product_explorer',
+    name: 'Product Explorer',
+    description: 'Selected 10+ different products',
+    icon: '🔍',
+    category: 'Explorer',
+    requirement: 'Select 10+ products'
+  },
+  {
+    id: 'streak_starter',
+    name: 'Consistency Rookie',
+    description: 'Maintained a 3-day streak',
+    icon: '🔥',
+    category: 'Consistency',
+    requirement: '3-day streak'
+  },
+  {
+    id: 'streak_champion',
+    name: 'Streak Champion',
+    description: 'Maintained a 7-day streak',
+    icon: '⚡',
+    category: 'Consistency',
+    requirement: '7-day streak'
+  },
+  {
+    id: 'ai_chatter',
+    name: 'AI Conversationalist',
+    description: 'Had 10+ chat exchanges',
+    icon: '💬',
+    category: 'Social',
+    requirement: '10+ chats'
+  },
+  {
+    id: 'template_user',
+    name: 'Template Enthusiast',
+    description: 'Used a routine template',
+    icon: '⚡',
+    category: 'Quick Start',
+    requirement: 'Use 1 template'
+  },
+  {
+    id: 'ingredient_guru',
+    name: 'Ingredient Guru',
+    description: 'Checked ingredient info',
+    icon: '🧪',
+    category: 'Knowledge',
+    requirement: 'Check ingredients'
+  },
+  {
+    id: 'budget_savvy',
+    name: 'Budget Savvy',
+    description: 'Viewed cost calculator',
+    icon: '💰',
+    category: 'Smart Shopper',
+    requirement: 'View costs'
+  },
+  {
+    id: 'social_sharer',
+    name: 'Social Star',
+    description: 'Downloaded an Instagram card',
+    icon: '📸',
+    category: 'Social',
+    requirement: 'Download share card'
+  },
+  {
+    id: 'data_analyst',
+    name: 'Data Enthusiast',
+    description: 'Viewed your analytics',
+    icon: '📊',
+    category: 'Tracking',
+    requirement: 'View analytics'
+  },
+  {
+    id: 'personality_picker',
+    name: 'Personality Pro',
+    description: 'Changed AI personality',
+    icon: '🎭',
+    category: 'Customization',
+    requirement: 'Change personality'
+  },
+  {
+    id: 'organizer',
+    name: 'Organized Pro',
+    description: 'Reordered your products',
+    icon: '🔄',
+    category: 'Customization',
+    requirement: 'Drag & drop reorder'
+  },
+  {
+    id: 'smart_searcher',
+    name: 'Smart Searcher',
+    description: 'Used natural language search',
+    icon: '🔍',
+    category: 'Features',
+    requirement: 'Search with NL'
+  },
+  {
+    id: 'planner',
+    name: 'Future Planner',
+    description: 'Viewed results timeline',
+    icon: '📅',
+    category: 'Planning',
+    requirement: 'View timeline'
+  },
+  {
+    id: 'collector',
+    name: 'Badge Collector',
+    description: 'Earned 5+ achievements',
+    icon: '🎖️',
+    category: 'Meta',
+    requirement: 'Earn 5 badges'
+  }
+];
+
+/* Get or initialize earned achievements */
+function getEarnedAchievements() {
+  const earned = localStorage.getItem('earnedAchievements');
+  return earned ? JSON.parse(earned) : [];
+}
+
+/* Check if achievement is earned */
+function hasAchievement(achievementId) {
+  return getEarnedAchievements().includes(achievementId);
+}
+
+/* Unlock an achievement */
+function unlockAchievement(achievementId) {
+  const earned = getEarnedAchievements();
+  if (!earned.includes(achievementId)) {
+    earned.push(achievementId);
+    localStorage.setItem('earnedAchievements', JSON.stringify(earned));
+    
+    /* Update badge count */
+    updateAchievementCount();
+    
+    /* Show unlock notification */
+    const achievement = achievements.find(a => a.id === achievementId);
+    if (achievement) {
+      showAchievementUnlock(achievement);
+    }
+    
+    /* Check for meta achievement */
+    if (earned.length >= 5 && !earned.includes('collector')) {
+      setTimeout(() => unlockAchievement('collector'), 1000);
+    }
+    
+    return true;
+  }
+  return false;
+}
+
+/* Show achievement unlock notification */
+function showAchievementUnlock(achievement) {
+  const notification = document.createElement('div');
+  notification.className = 'achievement-unlock';
+  notification.innerHTML = `
+    <div class="achievement-unlock-inner">
+      <div class="achievement-unlock-icon">${achievement.icon}</div>
+      <div class="achievement-unlock-content">
+        <div class="achievement-unlock-title">Achievement Unlocked!</div>
+        <div class="achievement-unlock-name">${achievement.name}</div>
+        <div class="achievement-unlock-desc">${achievement.description}</div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 100);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 500);
+  }, 4000);
+  
+  /* Confetti for achievement */
+  setTimeout(() => showConfetti(), 300);
+}
+
+/* Update achievement count badge */
+function updateAchievementCount() {
+  const countBadge = document.getElementById('achievementCount');
+  const earned = getEarnedAchievements();
+  if (countBadge) {
+    countBadge.textContent = earned.length;
+    countBadge.style.display = earned.length > 0 ? 'inline-block' : 'none';
+  }
+}
+
+/* Show achievements modal */
+function showAchievements() {
+  const modal = document.getElementById('achievementsModal');
+  const achievementsList = document.getElementById('achievementsList');
+  const earned = getEarnedAchievements();
+  
+  /* Group achievements by category */
+  const categories = {};
+  achievements.forEach(achievement => {
+    if (!categories[achievement.category]) {
+      categories[achievement.category] = [];
+    }
+    categories[achievement.category].push(achievement);
+  });
+  
+  /* Generate HTML */
+  let html = '';
+  Object.entries(categories).forEach(([category, items]) => {
+    html += `
+      <div class="achievement-category">
+        <h3 class="achievement-category-title">${category}</h3>
+        <div class="achievement-category-grid">
+    `;
+    
+    items.forEach(achievement => {
+      const isEarned = earned.includes(achievement.id);
+      html += `
+        <div class="achievement-badge ${isEarned ? 'earned' : 'locked'}">
+          <div class="achievement-badge-icon">${achievement.icon}</div>
+          <div class="achievement-badge-name">${achievement.name}</div>
+          <div class="achievement-badge-desc">${achievement.description}</div>
+          <div class="achievement-badge-requirement">${achievement.requirement}</div>
+          ${isEarned ? '<div class="achievement-earned-mark">✓ Earned</div>' : '<div class="achievement-locked-mark">🔒 Locked</div>'}
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+  });
+  
+  achievementsList.innerHTML = html;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  /* Track viewing achievements */
+  unlockAchievement('data_analyst');
+}
+
+/* Close achievements modal */
+function closeAchievements() {
+  document.getElementById('achievementsModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+/* Add achievements button listener */
+const achievementsBtn = document.getElementById('achievementsBtn');
+if (achievementsBtn) {
+  achievementsBtn.addEventListener('click', showAchievements);
+}
+
+/* Initialize achievement count on page load */
+updateAchievementCount();
+
+/* Track achievements throughout the app */
+/* These will trigger automatically based on user actions */

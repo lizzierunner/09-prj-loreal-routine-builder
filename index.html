@@ -52,6 +52,11 @@
             <i class="fa-solid fa-chart-line"></i>
             <span>My Stats</span>
           </button>
+          <button id="achievementsBtn" class="header-action-btn" title="View Achievements">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Badges</span>
+            <span id="achievementCount" class="badge">0</span>
+          </button>
         </div>
       </header>
 
@@ -417,6 +422,20 @@
             </ul>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Achievements Badge Collection Modal -->
+    <div id="achievementsModal" class="modal achievements-modal" style="display: none;">
+      <div class="achievements-content">
+        <div class="achievements-header">
+          <div>
+            <h2><i class="fa-solid fa-trophy"></i> My Achievement Collection</h2>
+            <p>Unlock badges by exploring features and building routines!</p>
+          </div>
+          <button class="modal-close" onclick="closeAchievements()">×</button>
+        </div>
+        <div id="achievementsList" class="achievements-grid"></div>
       </div>
     </div>
 
