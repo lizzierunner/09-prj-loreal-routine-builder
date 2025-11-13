@@ -3584,3 +3584,73 @@ body.dark-mode .selected-product-chip.dragging {
 .product-name {
   flex: 1;
 }
+
+/* ========================================
+   🔍 NATURAL LANGUAGE SEARCH
+   ======================================== */
+
+.nl-search-hint {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+.nl-search-hint i {
+  font-size: 18px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.2) rotate(180deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced search box for natural language */
+.search-box input {
+  transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
+  border-color: #8b5cf6;
+}
+
+body.dark-mode .nl-search-hint {
+  background: linear-gradient(135deg, #6b46c1 0%, #4c51bf 100%);
+  box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
+}
+
+@media (max-width: 768px) {
+  .nl-search-hint {
+    font-size: 13px;
+    padding: 10px 15px;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+}

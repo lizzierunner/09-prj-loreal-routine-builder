@@ -326,11 +326,10 @@ function filterProducts() {
     );
   }
   
-  /* Apply search filter if there's a search term */
+  /* Apply natural language search filter if there's a search term */
   if (searchTerm) {
     filteredProducts = filteredProducts.filter((product) => {
-      const searchableText = `${product.name} ${product.brand} ${product.description} ${product.category}`.toLowerCase();
-      return searchableText.includes(searchTerm);
+      return naturalLanguageMatch(product, searchTerm);
     });
   }
   
@@ -2432,3 +2431,149 @@ displaySelectedProducts = function() {
   /* Initialize drag & drop after rendering */
   setTimeout(() => initializeDragAndDrop(), 0);
 };
+
+/* ========================================
+   🔍 NATURAL LANGUAGE SEARCH
+   ======================================== */
+
+/* Natural language search with keyword detection */
+function naturalLanguageMatch(product, searchTerm) {
+  const term = searchTerm.toLowerCase();
+  
+  /* Build searchable text from product data */
+  const searchableText = `${product.name} ${product.brand} ${product.description} ${product.category}`.toLowerCase();
+  
+  /* Add ingredients if available */
+  if (product.ingredients) {
+    const ingredientsText = product.ingredients.join(' ').toLowerCase();
+    searchableText = searchableText + ' ' + ingredientsText;
+  }
+  
+  /* Basic keyword matching */
+  if (searchableText.includes(term)) {
+    return true;
+  }
+  
+  /* Price-based queries */
+  if (product.price) {
+    if ((term.includes('cheap') || term.includes('affordable') || term.includes('budget') || term.includes('under')) && product.price < 20) {
+      return true;
+    }
+    if ((term.includes('expensive') || term.includes('premium') || term.includes('luxury')) && product.price > 30) {
+      return true;
+    }
+    if (term.includes('under 15') && product.price < 15) {
+      return true;
+    }
+    if (term.includes('under 20') && product.price < 20) {
+      return true;
+    }
+    if (term.includes('under 25') && product.price < 25) {
+      return true;
+    }
+  }
+  
+  /* Rating-based queries */
+  if (product.rating) {
+    if ((term.includes('top rated') || term.includes('best') || term.includes('highly rated') || term.includes('5 star')) && product.rating >= 4.5) {
+      return true;
+    }
+    if (term.includes('popular') && product.reviewCount > 5000) {
+      return true;
+    }
+  }
+  
+  /* Skin concern keywords */
+  const concernMap = {
+    'acne': ['acne', 'blemish', 'breakout', 'pimple', 'clear skin'],
+    'aging': ['anti-aging', 'wrinkle', 'fine line', 'aging', 'youth', 'firm'],
+    'dry': ['dry', 'hydrat', 'moisture', 'nourish'],
+    'oily': ['oily', 'mattify', 'control oil', 'sebum'],
+    'sensitive': ['sensitive', 'gentle', 'sooth', 'calm'],
+    'dark spots': ['dark spot', 'hyperpigmentation', 'bright', 'even tone', 'discoloration'],
+    'dull': ['dull', 'radiant', 'glow', 'luminous', 'bright']
+  };
+  
+  for (const [concern, keywords] of Object.entries(concernMap)) {
+    if (keywords.some(keyword => term.includes(keyword))) {
+      if (searchableText.includes(concern) || keywords.some(k => searchableText.includes(k))) {
+        return true;
+      }
+    }
+  }
+  
+  /* Ingredient-based queries */
+  const ingredientKeywords = {
+    'vitamin c': ['vitamin c', 'ascorbic', 'brightening'],
+    'retinol': ['retinol', 'retinoid', 'vitamin a'],
+    'hyaluronic acid': ['hyaluronic', 'hydrating', 'plump'],
+    'niacinamide': ['niacinamide', 'vitamin b3', 'pore'],
+    'salicylic acid': ['salicylic', 'bha', 'exfoliat', 'acne'],
+    'ceramides': ['ceramide', 'barrier', 'repair'],
+    'peptides': ['peptide', 'anti-aging', 'collagen'],
+    'glycolic acid': ['glycolic', 'aha', 'exfoliat']
+  };
+  
+  for (const [ingredient, keywords] of Object.entries(ingredientKeywords)) {
+    if (keywords.some(keyword => term.includes(keyword))) {
+      if (searchableText.includes(ingredient) || 
+          (product.ingredients && product.ingredients.some(ing => ing.toLowerCase().includes(ingredient)))) {
+        return true;
+      }
+    }
+  }
+  
+  /* Product type queries */
+  const typeMap = {
+    'cleanser': ['cleanser', 'wash', 'foam', 'gel', 'cleansing'],
+    'moisturizer': ['moisturizer', 'cream', 'lotion', 'hydrator'],
+    'serum': ['serum', 'essence', 'concentrate'],
+    'mask': ['mask', 'treatment'],
+    'sunscreen': ['sunscreen', 'spf', 'sun protection'],
+    'toner': ['toner', 'essence'],
+    'eye cream': ['eye cream', 'eye', 'under eye']
+  };
+  
+  for (const [type, keywords] of Object.entries(typeMap)) {
+    if (keywords.some(keyword => term.includes(keyword)) && searchableText.includes(type)) {
+      return true;
+    }
+  }
+  
+  /* Time-of-day queries */
+  if ((term.includes('morning') || term.includes('day') || term.includes('am')) && 
+      (searchableText.includes('morning') || searchableText.includes('day'))) {
+    return true;
+  }
+  if ((term.includes('night') || term.includes('evening') || term.includes('pm')) && 
+      (searchableText.includes('night') || searchableText.includes('evening'))) {
+    return true;
+  }
+  
+  return false;
+}
+
+/* Update search placeholder with smart suggestions */
+const searchSuggestions = [
+  'Search products by name or keyword...',
+  'Try: "affordable moisturizers"',
+  'Try: "products with retinol"',
+  'Try: "best rated cleansers"',
+  'Try: "anti-aging serums"',
+  'Try: "products for acne"',
+  'Try: "under $20"',
+  'Try: "hydrating products"'
+];
+
+let suggestionIndex = 0;
+
+function rotatePlaceholder() {
+  const searchInput = document.getElementById('productSearch');
+  if (searchInput && !searchInput.value) {
+    suggestionIndex = (suggestionIndex + 1) % searchSuggestions.length;
+    searchInput.placeholder = searchSuggestions[suggestionIndex];
+  }
+}
+
+/* Rotate placeholder every 3 seconds */
+setInterval(rotatePlaceholder, 3000);
